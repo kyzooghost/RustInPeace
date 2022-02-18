@@ -11,6 +11,7 @@ struct FixedCapacityStackOfStrings {
 // {
 //    private String[] a; // stack entries
 //    private int N;      // size
+
 //    public FixedCapacityStackOfStrings(int cap)
 //    {  a = new String[cap];  }
 //    public boolean isEmpty() {  return N == 0; }
