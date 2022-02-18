@@ -1,0 +1,10 @@
+[package]
+name = "my-project"
+version = "0.1.0"
+authors = ["runner"]
+edition = "2021"
+
+[dependencies]
+intervals-general = "0.1.0"
+rand = "0.8.4"
+pipeliner = "1.0.1"

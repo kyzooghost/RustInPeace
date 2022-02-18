@@ -1,0 +1,13 @@
+/home/runner/RustInPeace/target/debug/deps/rgb-68973ce8ec33e26e.rmeta: /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/rgb-0.8.31/src/lib.rs /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/rgb-0.8.31/src/internal/convert/mod.rs /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/rgb-0.8.31/src/internal/convert/array.rs /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/rgb-0.8.31/src/internal/convert/tuple.rs /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/rgb-0.8.31/src/internal/ops.rs /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/rgb-0.8.31/src/internal/pixel.rs /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/rgb-0.8.31/src/internal/rgb.rs /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/rgb-0.8.31/src/internal/rgba.rs /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/rgb-0.8.31/src/alt.rs
+
+/home/runner/RustInPeace/target/debug/deps/rgb-68973ce8ec33e26e.d: /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/rgb-0.8.31/src/lib.rs /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/rgb-0.8.31/src/internal/convert/mod.rs /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/rgb-0.8.31/src/internal/convert/array.rs /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/rgb-0.8.31/src/internal/convert/tuple.rs /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/rgb-0.8.31/src/internal/ops.rs /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/rgb-0.8.31/src/internal/pixel.rs /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/rgb-0.8.31/src/internal/rgb.rs /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/rgb-0.8.31/src/internal/rgba.rs /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/rgb-0.8.31/src/alt.rs
+
+/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/rgb-0.8.31/src/lib.rs:
+/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/rgb-0.8.31/src/internal/convert/mod.rs:
+/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/rgb-0.8.31/src/internal/convert/array.rs:
+/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/rgb-0.8.31/src/internal/convert/tuple.rs:
+/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/rgb-0.8.31/src/internal/ops.rs:
+/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/rgb-0.8.31/src/internal/pixel.rs:
+/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/rgb-0.8.31/src/internal/rgb.rs:
+/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/rgb-0.8.31/src/internal/rgba.rs:
+/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/rgb-0.8.31/src/alt.rs:
