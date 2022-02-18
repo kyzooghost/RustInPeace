@@ -1,2 +1,0 @@
-cargo:rustc-env=TYPENUM_BUILD_CONSTS=/home/runner/RustInPeace/target/debug/build/typenum-201f4e5774883a7d/out/consts.rs
-cargo:rustc-env=TYPENUM_BUILD_OP=/home/runner/RustInPeace/target/debug/build/typenum-201f4e5774883a7d/out/op.rs
