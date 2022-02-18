@@ -35,18 +35,19 @@ impl FixedCapacityStackOfStrings {
   }
 }
 
-// 1.3.9
-// Write a program that takes from standard input an expression without left parentheses and prints the equivalent infix expression with the parentheses inserted. 
-// For example, given the input: 1 + 2 ) * 3 - 4 ) * 5- 6 ) ) )
-// Your program should print ( ( 1 + 2 ) * ( ( 3 -4 ) * ( 5 - 6 ) )
+// 1.3.4
+// Write a stack client Parentheses that reads in a text stream from standard input and uses a stack to determine whether its parentheses are properly balanced. 
+// For example, your program should print true for [()]{}{[()()]()} and false for [(]).
 
 fn main() {
-  let string1 = String::from("1+2)*3-4)*5-6)))");
-  let string2 = String::from("((1+2)*((3-4)*(5-6))");
-  assert!( infex(string1) == string2, "incorrect infix implementation");
+  let string1 = String::from("[()]{}{[()()]()}");
+  let string2 = String::from("[(])");
+
+  assert!( parentheses(string1), "string1 should be balanced");
+  assert!( !parentheses(string2), "string2 should not be balanced");
 }
 
-fn infix(string: String) -> bool {
+fn parentheses(string: String) -> bool {
   let mut stack = FixedCapacityStackOfStrings::new(100);
   let characters: Vec<char> = string.chars().collect();
 
