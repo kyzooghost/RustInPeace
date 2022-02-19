@@ -103,22 +103,22 @@ fn main() {
   // Create stack
   let string1 = String::from("x^y/(5*z)+2");
   let string2 = String::from("xy^5z*/2+");
-  // assert!( infix(string1) == string2, "incorrect infix implementation");
-  // println!("Successful infix");
+  assert!( InfixToPostfix(string1) == string2, "incorrect InfixToPostfix implementation");
+  println!("Success!");
 }
 
 fn InfixToPostfix(string: String) -> String {
   let mut stack = FixedCapacityStackOfChars::new(100);
   let mut operatorStack = FixedCapacityStackOfChars::new(100);
   let characters: Vec<char> = string.chars().collect();
-  let mut parenthesisCount:i32 = 0;
+  let mut parenthesisCount:usize = 0;
 
   for c in characters {
     // If variable, push onto stack
     if !isOperator(c) && !isParenthesis(c) {
       stack.push(c);
 
-      if stack.N >= 2 {stack.push(operatorStack.pop())}
+      if operatorStack.N > parenthesisCount {stack.push(operatorStack.pop())}
       continue;
     }
 
@@ -128,6 +128,7 @@ fn InfixToPostfix(string: String) -> String {
     }
 
     if c == ')' {
+      stack.push(operatorStack.pop());
       parenthesisCount = parenthesisCount - 1;
       continue;
     }
@@ -138,7 +139,6 @@ fn InfixToPostfix(string: String) -> String {
     }
   }
 
-  
   stack.toString()
 }
 
