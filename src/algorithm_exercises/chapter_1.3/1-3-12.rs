@@ -84,4 +84,3 @@ fn stringToStack(string: String) -> FixedCapacityStackOfStrings {
 
   stack
 }
-

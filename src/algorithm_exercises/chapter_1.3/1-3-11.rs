@@ -82,11 +82,6 @@ fn EvaluatePostfix(string: String) -> i32 {
   stack.pop()
 }
 
-// Scan the string left to right.
-// • When you encounter an operand push it on the stack;
-// • when you encounter an operator, pop the corresponding operands off the stack,
-// • perform the operation, and push the result back on the stack. 
-
 fn isOperator (character: char) -> bool {
   if character == '+' || character == '-' || character == '*' || character == '/' || character == '^' {return true}
   false
