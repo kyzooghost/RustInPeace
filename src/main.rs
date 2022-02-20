@@ -6,13 +6,8 @@ trait Stack<T> {
   fn push(&mut self, item:T);
   fn pop(&mut self) -> T;
   fn new(cap: usize) -> Self;
+  fn top(&self) -> T;
   fn toString(&mut self) -> String;
-}
-
-#[derive(Debug)]
-struct FixedCapacityStackOfStrings {
-  N: usize, // size
-  a: Vec<String>, // stack entries
 }
 
 #[derive(Debug)]
@@ -47,6 +42,10 @@ impl Stack<char> for FixedCapacityStackOfChars {
     popped_element
   }
 
+  fn top (&self) -> char {
+    self.a[self.N - 1]
+  }
+
   fn toString(&mut self) -> String {
     let mut string = String::from("");
     while !self.isEmpty() {
@@ -56,86 +55,60 @@ impl Stack<char> for FixedCapacityStackOfChars {
   }
 }
 
-impl Stack<String> for FixedCapacityStackOfStrings {
-  fn new(cap: usize) -> Self {
-    assert!(cap != 0, "cap cannot be 0");
-    FixedCapacityStackOfStrings { N: 0, a: vec![String::new(); cap]}
-  }
-
-  fn size(&self) -> usize {
-    self.N
-  }
-
-  fn isEmpty(&self) -> bool {
-    self.N == 0
-  }
-
-  fn push(&mut self, item: String) {
-    self.a[self.N] = item;
-    self.N = self.N + 1;
-  }
-
-  fn pop(&mut self) -> String {
-    let popped_element: String = self.a[self.N - 1].clone();
-    self.a[self.N - 1] = "".to_string();
-    self.N = self.N - 1;
-    popped_element
-  }
-
-  fn toString(&mut self) -> String {
-    let mut string = String::from("");
-    while !self.isEmpty() {
-      string.push(self.pop().chars().nth(0).expect("?Not a single character string"));
-    }
-    string.chars().rev().collect::<String>()
-  }
-}
-
-// 1.3.10
-// Write a filter InfixToPostfix that converts an arithmetic expression from infix to postfix.
-// e.g. Infix x^y/(5*z)+2 => Postfix xy^5z*/2+
-
-// Non-operator => Push onto main stack
-// Operator => Push onto scratch stack
-// Every 2 non-operator -> push operator onto stack
+// 1.3.9
+// Write a program that takes from standard input an expression without left parentheses and prints the equivalent infix expression with the parentheses inserted. 
+// For example, given the input: 1 + 2 ) * 3 - 4 ) * 5 - 6 ) ) )
+// Your program should print ( ( 1 + 2 ) * ( ( 3 -4 ) * ( 5 - 6 ) ) )
 
 fn main() {
-  // Create stack
-  let string1 = String::from("x^y/(5*z)+2");
-  let string2 = String::from("xy^5z*/2+");
-  assert!( InfixToPostfix(string1) == string2, "incorrect InfixToPostfix implementation");
-  println!("Success!");
+  let string1 = String::from("1+2)*3-4)*5-6)))");
+  let string2 = String::from("((1+2)*((3-4)*(5-6)))");
+  assert!( infix(string1) == string2, "incorrect infix implementation");
+  // println!("{}", infix(string1));
+  println!("Successful infix");
 }
 
-fn InfixToPostfix(string: String) -> String {
+fn infix(string: String) -> String {
   let mut stack = FixedCapacityStackOfChars::new(100);
-  let mut operatorStack = FixedCapacityStackOfChars::new(100);
+  let mut scratchStack = FixedCapacityStackOfChars::new(100);
   let characters: Vec<char> = string.chars().collect();
-  let mut parenthesisCount:usize = 0;
-
+  
   for c in characters {
-    // If variable, push onto stack
-    if !isOperator(c) && !isParenthesis(c) {
-      stack.push(c);
+    // Push to stack if character is letter or number
+    if !isParenthesis(c) {stack.push(c);}
 
-      if operatorStack.N > parenthesisCount {stack.push(operatorStack.pop())}
-      continue;
-    }
+    else if c == ')' {
+        let mut parenthesisCount: i32 = 0;
+        let mut operatorCount: i32 = 0;
 
-    if c == '(' {
-      parenthesisCount = parenthesisCount + 1;
-      continue;
-    }
+        while operatorCount < 2 {          
+          
+          // Pop everything from scratchStack onto stack
+          if stack.isEmpty() {
+            stack.push('(');
+            while !scratchStack.isEmpty() {
+               stack.push(scratchStack.pop());
+            }
+            stack.push(')');
+            break;
+          }
+          
+          else if stack.top() == ')' {parenthesisCount = parenthesisCount + 1;}
+          else if stack.top() == '(' {parenthesisCount = parenthesisCount - 1;}
+          else if isOperator(stack.top()) && parenthesisCount == 0 {operatorCount = operatorCount + 1;}
 
-    if c == ')' {
-      stack.push(operatorStack.pop());
-      parenthesisCount = parenthesisCount - 1;
-      continue;
-    }
+          // Pop everything from scratchStack onto stack
+          if operatorCount == 2 {
+            stack.push('(');
+            while !scratchStack.isEmpty() {
+               stack.push(scratchStack.pop());
+            }
+            stack.push(')');
+            break;
+          }
 
-    if isOperator(c) {
-      operatorStack.push(c);
-      continue;
+          scratchStack.push(stack.pop());
+        }
     }
   }
 

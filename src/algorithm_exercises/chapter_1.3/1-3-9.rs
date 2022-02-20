@@ -93,7 +93,6 @@ impl FixedCapacityStackOfChars {
 }
 
 fn main() {
-  // Create stack
   let string1 = String::from("1+2)*3-4)*5-6)))");
   let string2 = String::from("((1+2)*((3-4)*(5-6)))");
   assert!( infix(string1) == string2, "incorrect infix implementation");
