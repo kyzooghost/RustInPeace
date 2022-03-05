@@ -1,34 +1,39 @@
 #![allow(non_snake_case)]
 #![allow(non_camel_case_types)]
 
-// https://github.com/reneargento/algorithms-sedgewick-wayne/blob/master/src/chapter1/section3/Exercise19.java
+// https://medium.com/swlh/implementing-a-linked-list-in-rust-c25e460c3676
 
 pub mod queue {
+  // A Node can either exist or not exist, use Enum to create your own 'undefined' type
   #[derive(Debug, Clone)]
   pub enum Node<T> {
     None,
     // Box are pointers. Live on stack, but store address to object on the heap
     // When you dereference them, they unbox their address' contents by following the pointer
+    // Node contain 'item' and pointer (Box) to another Node
     Node { item: T, next: Box<Node<T>>}
   }
 
+  // Pointer to a node
   #[derive(Clone)]  
   pub struct Cursor<T> {
     curr: Node<T>
   }
 
-  // Trait bound Copy to T
+  // T is trait-bound to Copy
   // .. means we don't care about contents
   impl<T> Node<T> where T: Copy {
     pub fn new() -> Self {
-      Self:: None
+      Self::None
     }
     
+
     pub fn push(&mut self, x: T) {
       match self {
+        // If None, to_node(x)
         Self::None => self.to_node(x),
 
-        // Keep pushing x until it finds a tail?
+        // Recursive until it hits Self::None branch, 
         Self::Node {next, ..} => next.push(x)
       }
     }
@@ -101,22 +106,36 @@ pub mod queue {
   }
 }
 
-// p164
-// 1.3.19 
-// Give a code fragment that removes the last node in a linked list whose first node is first.
-
-// Linked list implementation is FIFO
-
 fn main() {
   let mut list: queue::Node<i32> = queue::Node::new();
+  let mut list2: queue::Node<i32> = queue::Node::new();
 
   list.push(1);
   list.push(2);
   list.push(3);
   list.push(4);
-  // First node now has value = 4, last node now has value = 1
 
+  list2.push(10);
+  list2.push(20);
+  list2.push(30);
+
+  println!("{:?}", list2.pop().unwrap());
+  println!("{:?}", list2.pop().unwrap());
+  println!("{:?}", list2.pop().unwrap());
+  println!{"---"};
+
+  // Implementing Iterator enable easy cloning
+  // Don't have to consume the list to use its values
   for i in list.clone() {
-    println!("{:?}", list.pop().unwrap()); // node with value = 1, will be popped first
+    println!("{}", i);
+  }
+
+  for i in list.clone().into_iter().map(|x| x * 2) {
+    println!("{:?}", i);
+  }
+
+  // Can now iterate through
+  for (i, x) in list.into_iter().enumerate() {
+    println!("iter2: {} {}", i, x);
   }
 }
