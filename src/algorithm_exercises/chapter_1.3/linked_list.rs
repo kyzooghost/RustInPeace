@@ -67,10 +67,16 @@ pub mod queue {
     }
 
     pub fn to_none(&mut self) {
+      // self is a pointer? *self = dereference the pointer
+      // std::mem::replace 
+      // Node::None gets put in memory spot of self
+      // *self - old self?
       *self = std::mem::replace(self, Node::None)
     }
 
     pub fn to_next(&mut self, nxt: Node<T>) {
+      // nxt is a new Node
+      // *self = nxt
       *self = nxt;
     }
   }

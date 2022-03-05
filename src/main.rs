@@ -1,39 +1,55 @@
 #![allow(non_snake_case)]
 #![allow(non_camel_case_types)]
 
-// https://github.com/reneargento/algorithms-sedgewick-wayne/blob/master/src/chapter1/section3/Exercise19.java
+// https://medium.com/swlh/implementing-a-linked-list-in-rust-c25e460c3676
+
+// Push value into list -> Create new node that linked to tail
+// -> Previous tail becomes becomes node with new value as its next
+// 1 -> 2 -> 3
+// Push 4, 1 -> 2 -> 3 -> 4
+// Looks like a queue data structure
 
 pub mod queue {
+  // A Node can either exist or not exist, use Enum to create your own 'undefined' type
   #[derive(Debug, Clone)]
   pub enum Node<T> {
     None,
     // Box are pointers. Live on stack, but store address to object on the heap
     // When you dereference them, they unbox their address' contents by following the pointer
+    // Node contain 'item' and pointer (Box) to another Node
     Node { item: T, next: Box<Node<T>>}
   }
 
+  // Pointer to a node
   #[derive(Clone)]  
   pub struct Cursor<T> {
     curr: Node<T>
   }
 
-  // Trait bound Copy to T
+  // T is trait-bound to Copy
   // .. means we don't care about contents
+  // Can implement Copy for any value that live on the stack
   impl<T> Node<T> where T: Copy {
     pub fn new() -> Self {
-      Self:: None
+      Self::None
     }
+
+    // PUSH 1 | 1, -> null
+    // PUSH 2 | 1 -> 2 -> null
+    // PUSH 3 | 1 -> 2 -> 3 -> null
     
     pub fn push(&mut self, x: T) {
       match self {
+        // If None, to_node(x)
         Self::None => self.to_node(x),
 
-        // Keep pushing x until it finds a tail?
+        // Recursive until it hits Self::None branch, 
         Self::Node {next, ..} => next.push(x)
       }
     }
 
     // Return Option, so can handle empty list
+    // Option => None or Some(T)
     // Mutable reference to self, means moving values out will be difficult
     pub fn pop(&mut self) -> Option<T> {
       match self {
@@ -41,15 +57,27 @@ pub mod queue {
 
         Self::Node {item, next} => {
           let mut n = Box::new(Self::None); // create mutable pointer to empty Node 
-          let item = *item; // Create new variable item, store item in here
-          std::mem::swap(next, &mut n); // Swap places in memory, on next and reference to empty Box
+          let item = *item; // Move item into a new variable, out of struct self 
+          std::mem::swap(next, &mut n); 
+          // Swap places in memory, on next and reference to empty Box
+          // n becomes a mutable reference to next, next becomes a pointer to null
           self.to_next(*n); // Dereference box to get Node value, pass to to_next
+          // self becomes next (pop from the front, so FIFO queue)
           Some(item) // Wrap item, return it
+
+          // overall 'item' moved out into new variable, wrapped and returned
+          // next is swapped with Box::new(Self::None)
+          // self itself becomes next dereferenced
         }
       }
     }
 
     pub fn to_node(&mut self, x: T) {
+      // Need to dereference the reference, to change self
+      // But to access self, we don't need to dereference
+      // match itself will return a value, cases for 'self'
+      // self == Self::None => self becomes new Node
+      // else, panic!
       *self = match self {
         Self::None => {
           Self::Node {
@@ -62,6 +90,9 @@ pub mod queue {
     }
 
     pub fn to_none(&mut self) {
+      // Special move for replace? Node::None moved into self
+      // I don't understand though, self is re-assigned twice?
+      // Or original value of self, is detached from any lifetime involving self
       *self = std::mem::replace(self, Node::None)
     }
 
@@ -69,10 +100,11 @@ pub mod queue {
       *self = nxt;
     }
   }
-  
+
+  // By implementing IntoIterator for a type, define how it will be converted into an iterator
   impl<T> IntoIterator for Node<T> where T: Copy {
     type Item = T; // Tells compiler what to expect for iterator values
-    type IntoIter = Cursor<T>; // Custom Cursor type
+    type IntoIter = Cursor<T>; // Custom Cursor type, or Iterator type
 
     // Must return whatever IntoIter refers to
     fn into_iter(self) -> Self::IntoIter {
@@ -101,22 +133,36 @@ pub mod queue {
   }
 }
 
-// p164
-// 1.3.19 
-// Give a code fragment that removes the last node in a linked list whose first node is first.
-
-// Linked list implementation is FIFO
-
 fn main() {
   let mut list: queue::Node<i32> = queue::Node::new();
+  let mut list2: queue::Node<i32> = queue::Node::new();
 
   list.push(1);
   list.push(2);
   list.push(3);
   list.push(4);
-  // First node now has value = 4, last node now has value = 1
 
+  list2.push(10);
+  list2.push(20);
+  list2.push(30);
+
+  println!("{:?}", list2.pop().unwrap());
+  println!("{:?}", list2.pop().unwrap());
+  println!("{:?}", list2.pop().unwrap());
+  println!{"---"};
+
+  // Implementing Iterator enable easy cloning
+  // Don't have to consume the list to use its values
   for i in list.clone() {
-    println!("{:?}", list.pop().unwrap()); // node with value = 1, will be popped first
+    println!("{}", i);
+  }
+
+  for i in list.clone().into_iter().map(|x| x * 2) {
+    println!("{:?}", i);
+  }
+
+  // Can now iterate through
+  for (i, x) in list.into_iter().enumerate() {
+    println!("iter2: {} {}", i, x);
   }
 }
