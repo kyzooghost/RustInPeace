@@ -166,10 +166,6 @@ pub mod LinkedList {
           self.dequeue().unwrap()
         },
 
-        // k if k == self.size() - 1 => {
-        //   self.pop().unwrap()
-        // },
-
         _ => {
           // Seems like I need an 'if let...else' block to destructure an Enum variant
           // So defining a struct inside of an Enum like this is clumsy
