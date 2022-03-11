@@ -187,18 +187,25 @@ pub mod LinkedList {
         }
       }
     }
+
   }
 
 }
 
 // p164
 // 1.3.21
+
 // Write a method find() that takes a linked list and a string key as arguments 
 // and returns true if some node in the list has key as its item field, false otherwise.
 
-// First enable LinkedList of string
-
-fn main() {}
+fn main() {
+  let mut list: LinkedList::Node<&str> = LinkedList::Node::new();
+  list.queue("a");
+  list.queue("b");
+  list.queue("c");
+  list.queue("d");
+  list.queue("e");
+}
 
 fn find (linkedlist: LinkedList::Node<&str>, key: &str) -> bool {
   for node in linkedlist {

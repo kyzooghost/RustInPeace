@@ -212,64 +212,17 @@ pub mod LinkedList {
       
       false
     }
-
-    // Almost the same implementation as find(), except instead of returning true/false
-    // Returns index of the found element, if true
-    // Returns None, if not found
-    pub fn findIndex(&self, x: &T) -> Option<usize> {
-      let mut index: usize = 0;
-      
-      match self {
-        Self::Node {item, next} => {
-          // Base case - first item is the item you are looking for
-          if item == x {return Some(index)}
-
-          let mut next_node = &**next;
-
-          while !Node::is_none(next_node) {
-
-            // Increment to the next
-            if let Self::Node { item, next } = next_node {
-              index = index + 1;
-              if item == x {return Some(index)}
-              next_node = &**next;
-            };
-          }   
-
-        },
-
-        _ => return None
-      }
-      
-      None
-    }
-
-    pub fn removeAfter(&mut self, x: &T) {
-      if !self.find(x) {panic!("could not find Node")}
-      let index = self.findIndex(x).unwrap();
-      self.delete(index + 1);
-    }
   }
 
 }
 
 // p164
-// 1.3.24
+// 1.3.21
 
-// Write a method removeAfter() that takes a linked-list Node as argument 
-// and removes the node following the given one 
-// (and does nothing if the argument or the next field in the argument node is null).
+// Write a method find() that takes a linked list and a string key as arguments 
+// and returns true if some node in the list has key as its item field, false otherwise.
 
-fn main() {
-  let mut list = LinkedList::Node::new();
-  list.queue("a");
-  list.queue("b");
-  list.queue("c");
-  list.queue("d");
-  list.queue("e");
-  list.removeAfter(&"c");
-  println!("{:?}", list);
-}
+fn main() {}
 
 #[cfg(test)]
 mod tests {
@@ -285,13 +238,5 @@ mod tests {
     list.queue("e");
     assert_eq!(list.find(&"a"), true);
     assert_eq!(list.find(&"z"), false);
-    assert_eq!(list.findIndex(&"c"), Some(2));
-    assert_eq!(list.findIndex(&"e"), Some(4));
-
-    list.removeAfter(&"b");
-    assert_eq!(list.find(&"c"), false);
-    assert_eq!(list.size(), 4);
-
-
   }
 }
