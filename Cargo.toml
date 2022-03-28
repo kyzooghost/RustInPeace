@@ -5,4 +5,3 @@ authors = ["runner"]
 edition = "2021"
 
 [dependencies]
-factorial = "0.2.1"
