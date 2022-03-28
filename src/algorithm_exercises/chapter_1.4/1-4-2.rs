@@ -15,8 +15,8 @@ fn Threesum(vector: Vec<i32>) -> u32 {
     let mut count = 0;
 
     for i in 0..N {
-        for j in 0..N {
-            for k in 0..N {
+        for j in i..N {
+            for k in j..N {
                 // if vector[i] + vector[j] + vector[k] == 0 {count = count + 1;}
                 let a = vector[i].to_bigint().unwrap();
                 let b = vector[j].to_bigint().unwrap();
