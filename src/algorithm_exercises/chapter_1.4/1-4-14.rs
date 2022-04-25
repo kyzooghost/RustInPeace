@@ -62,8 +62,8 @@ fn FourSumFast(vec: Vec<i32>) -> u32 {
         if sumMap.contains_key(&(sum * -1)) {
             let pairComplementVector = sumMap.get(&(sum * -1)).unwrap();
 
-            // Iterate through each pair in pairVector - 
-            // Iterate through each pair in pairComplementVector
+            // Iterate through each pair in pairVector - O(n2) up to this point, because # of array accesses = # of pairs = n(n-1)
+            // Iterate through each pair in pairComplementVector - Worst case O(n) for inner-most loop? So O(n3) altogether?
             for element in pairVector {
                 for elementComplement in pairComplementVector {
                     if element.1 < elementComplement.0 {
