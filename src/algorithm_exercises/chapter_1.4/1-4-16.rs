@@ -9,8 +9,6 @@
 // the the difference of any other pair (in absolute value). 
 // The running time of your program should be linearithmic in the worst case.
 
-// Err, sorting is linearithmic, and sorting 
-
 use rand::{thread_rng, Rng};
 
 fn main() {
