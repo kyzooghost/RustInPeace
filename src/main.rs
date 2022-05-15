@@ -1,103 +1,26 @@
 #![allow(non_snake_case)]
 #![allow(non_camel_case_types)]
 
-// 1.4.31
+// 1.4.34
 
-// Deque with three stacks. 
-// Implement a deque with three stacks so that each deque operation 
-// takes a constant amortized number of stack operations.
+// Hot or cold. 
+// Your goal is to guess a secret integer between 1 and N. 
+// You repeatedly guess integers between 1 and N. 
+// After each guess you learn if your guess equals the secret integer (and the game stops). 
 
-struct Deque<T> where T: std::fmt::Debug {
-    size: usize,
-    stack_stack: Vec<T>,
-    stack_placeholder: Vec<T>,
-    stack_queue: Vec<T>,
-}
+// Otherwise, you learn if the guess is hotter (closer to) or colder (farther from) 
+// the secret number than your previous guess. 
+// Design an algorithm that finds the secret number in at most ~2 lg N guesses. 
 
-impl<T> Deque<T> where T: std::fmt::Debug {
-    pub fn isEmpty(&self) -> bool {
-        self.size == 0
-    }
+// Then design an algorithm that finds the secret number in at most ~ 1 lg N guesses.
 
-    pub fn new() -> Self {
-        Deque {
-            size: 0, 
-            stack_stack: Vec::new(),
-            stack_placeholder: Vec::new(),
-            stack_queue: Vec::new()
-        }
-    }
+// So you don't get a 'hotter' or 'colder' indicator until you have done your first guess
+// Place your first guess in the middle
+// Then place second guess in the middle of the first half
 
-    pub fn push(&mut self, elem: T) {
-        self.size = self.size + 1;
-        self.stack_stack.push(elem);
-    }
-
-    pub fn enqueue(&mut self, elem: T) {
-        self.size = self.size + 1;
-        self.stack_queue.push(elem);
-    }
-
-    pub fn pop(&mut self) -> Option<T> {
-        if self.size == 0 {None}
-        else {
-            if self.stack_stack.is_empty() {
-                // Move half of stack_queue to stack_stack
-
-                for _ in 0..self.size/2 {
-                    self.stack_placeholder.push(self.stack_queue.pop().unwrap())
-                }
-
-                while !self.stack_queue.is_empty() {
-                    self.stack_stack.push(self.stack_queue.pop().unwrap())
-                }
-
-                while !self.stack_placeholder.is_empty() {
-                    self.stack_queue.push(self.stack_placeholder.pop().unwrap())
-                }
-
-            }
-            self.size = self.size - 1;
-            self.stack_stack.pop()
-        }
-    }
-
-    pub fn dequeue(&mut self) -> Option<T> {
-        if self.size == 0 {None}
-        else {
-            if self.stack_queue.is_empty() {
-                // Move half of stack_stack to stack_queue
-
-                for _ in 0..self.size/2 {
-                    self.stack_placeholder.push(self.stack_stack.pop().unwrap())
-                }
-
-                while !self.stack_stack.is_empty() {
-                    self.stack_queue.push(self.stack_stack.pop().unwrap())
-                }
-
-                while !self.stack_placeholder.is_empty() {
-                    self.stack_stack.push(self.stack_placeholder.pop().unwrap())
-                }
-
-            }
-
-            self.size = self.size - 1;    
-            self.stack_queue.pop()
-        }
-    }
-}
+// If hotter, you again place in middle of first half, within the first half
+// If colder, you put in the middle of the second half, then you place in the middle of the first half, within that second half
+// Repeat until you get the secret integer
 
 fn main() {
-    let mut a = Deque::new();
-    a.push(1);
-    a.push(2);
-    a.push(3);
-    a.push(4);
-
-    println!("{:?}", a.pop());
-    println!("{:?}", a.dequeue());
-    println!("{:?}", a.pop());
-    println!("{:?}", a.pop());
-    println!("{:?}", a.pop());
 }
