@@ -27,18 +27,18 @@ impl<T> Steque<T> where T: std::fmt::Debug {
         self.size = self.size + 1;
     }
 
-    pub fn dequeue(&mut self) -> Option<T> {
+    pub fn pop(&mut self) -> Option<T> {
         if self.size == 0 {None}
         else {
             self.size = self.size - 1;
 
-            if self.dequeue_stack.is_empty() {
-                while !self.queue_stack.is_empty() {
-                    self.dequeue_stack.push(self.queue_stack.pop().unwrap())
+            if self.queue_stack.is_empty() {
+                while !self.dequeue_stack.is_empty() {
+                    self.queue_stack.push(self.dequeue_stack.pop().unwrap())
                 }
             }
             
-            self.dequeue_stack.pop()
+            self.queue_stack.pop()
         }
     }
 
