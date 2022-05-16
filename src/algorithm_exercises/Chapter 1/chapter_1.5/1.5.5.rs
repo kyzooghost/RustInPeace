@@ -1,10 +1,19 @@
 #![allow(non_snake_case)]
 #![allow(non_camel_case_types)]
 
-// 1.5.1
+// 1.5.5
 
-// Show the contents of the id[] array and the number of times the array is accessed for each input pair 
-// when you use quick-find for the sequence 9-0 3-4 5-8 7-2 2-1 5-7 0-3 4-2.
+// Estimate the minimum amount of time (in days) that would be required 
+// for quick-find to solve a dynamic connectivity problem with 10^9 sites and 10^6 input pairs, 
+// on a computer capable of executing 10^9 instructions per second. 
+// Assume that each iteration of the inner for loop requires 10 machine instructions.
+
+// Need to call union 10^6 times
+// Assume find() has constant time so negligible in our analysis
+// How many times does the for-loop run within each union call? Need to run over the entire array of sites
+// So each union call requires 10^9 for-loop iterations => 10^10 machine instructions
+// To call union() for each input pair => 10^(10+6) = 10^16 machine instructions
+// => 10^7 seconds => ~115.7 days
 
 struct UF {
     count: usize,
@@ -63,28 +72,22 @@ fn main() {
     let mut uf = UF::new(10);
 
     let connections = vec![
-        (9,0), 
-        (3,4),
-        (5,8),
-        (7,2),
-        (2,1),
-        (5,7),
-        (0,3),
-        (4,2),
+        (0, 1),
+        (0, 2),
+        (0, 3),
+        (0, 4)
     ];
 
     for element in connections {
-        if uf.connected(element.0, element.1) {continue};
+        // if uf.connected(element.0, element.1) {continue};
         uf.union(element.0, element.1);
         println!("{} --- {}", element.0, element.1);
+        // println!("ARRAY ACCESS - {:?}", uf.array_access);
+        println!("ID - {:?}", uf.id);
+        println!("SZ - {:?}", uf.sz);
     }
 
     println!("{:?} components", uf.count());
     println!("{:?}", uf.id);
     println!("{:?}", uf.array_access);
 }
-
-// id = [1, 1, 1, 1, 1, 1, 6, 1, 1, 1]
-// 126 array accesses
-// For each tuple - 4 for 4x find(), N for looping through id[] array, 1 to N-1 for updating nodes
-// => N(2N + 3) worst case, N(N + 5) best case

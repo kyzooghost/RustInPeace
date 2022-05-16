@@ -1,22 +1,10 @@
 #![allow(non_snake_case)]
 #![allow(non_camel_case_types)]
 
-// 1.5.6
+// 1.5.3
 
-// Estimate the minimum amount of time (in days) that would be required 
-// for weighted quick-union to solve a dynamic connectivity problem with 10^9 sites and 10^6 input pairs, 
-// on a computer capable of executing 10^9 instructions per second. 
-// Assume that each iteration of the inner for loop requires 10 machine instructions.
-
-// Need to call union 10^6 times
-// find() - assume each loop iteration = 10 machine instructions, worst case ln(10^9) iterations
-// So 2x find() = 2 x 10 x lg (10^9) = 600 machine instructions
-// Assume constant 10 machine instructions for the union() implementation after the 2 find() expressions
-// So 610 machine instructions per union() call
-// Call union() 10^6 times
-// ~10^6 * 610
-// ~10.8 * 6 machine instructions
-// ~0.6 seconds
+// Show the contents of the id[] array and the number of times the array is accessed for each input pair 
+// when you use weighted quick-union for the sequence 9-0 3-4 5-8 7-2 2-1 5-7 0-3 4-2. 
 
 struct UF {
     count: usize,
@@ -84,10 +72,14 @@ fn main() {
     let mut uf = UF::new(10);
 
     let connections = vec![
-        (0, 1),
-        (0, 2),
-        (0, 3),
-        (0, 4)
+        (9,0), 
+        (3,4),
+        (5,8),
+        (7,2),
+        (2,1),
+        (5,7),
+        (0,3),
+        (4,2),
     ];
 
     for element in connections {
@@ -103,3 +95,47 @@ fn main() {
     println!("{:?}", uf.id);
     println!("{:?}", uf.array_access);
 }
+
+// id = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+// sz = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+
+// (9,0)
+// 2 x find() + 1 = 3
+// id = [9, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+// sz = [1, 1, 1, 1, 1, 1, 1, 1, 1, 2]
+
+// (3,4)
+// 2 x find() + 1 = 3
+// id = [9, 1, 2, 3, 3, 5, 6, 7, 8, 9]
+// sz = [1, 1, 1, 2, 1, 1, 1, 1, 1, 2]
+
+// (5,8)
+// 2 x find() + 1 = 3
+// id = [9, 1, 2, 3, 3, 5, 6, 7, 5, 9]
+// sz = [1, 1, 1, 2, 1, 2, 1, 1, 1, 2]
+
+// (7,2)
+// 2 x find() + 1 = 3
+// id = [9, 1, 7, 3, 3, 5, 6, 7, 5, 9]
+// sz = [1, 1, 1, 2, 1, 2, 1, 2, 1, 2]
+
+// (2,1)
+// 3 + 1 + 1 = 5
+// id = [9, 7, 7, 3, 3, 5, 6, 7, 5, 9]
+// sz = [1, 1, 1, 2, 1, 2, 1, 3, 1, 2]
+
+
+// (5,7)
+// 2 x find() + 1 = 3
+// id = [9, 7, 7, 3, 3, 7, 6, 7, 5, 9]
+// sz = [1, 1, 1, 2, 1, 2, 1, 5, 1, 2]
+
+// (0,3)
+// 5 array access
+// id = [9, 7, 7, 9, 3, 7, 6, 7, 5, 9]
+// sz = [1, 1, 1, 2, 1, 2, 1, 5, 1, 4]
+
+// (4,2)
+// 9 array access
+// id = [9, 7, 7, 9, 3, 7, 6, 7, 5, 7]
+// sz = [1, 1, 1, 2, 1, 2, 1, 9, 1, 4]
