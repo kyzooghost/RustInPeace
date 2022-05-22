@@ -6,15 +6,13 @@
 // p259 - Shell sort
 // p264 - Exercises
 
-// 2.1.10
+// 2.1.9
 
-// Why not use selection sort for h-sorting in shellsort?
+// Shell sort trace - E A S Y S H E L L S O R T Q U E S T I O N
+// 21 characters
 
-// Because shell sort effectively runs through the entire array for each value of 'h'
-// You are forced to do an exchange in each run
-
-// Also as h decreases, array is partially sorted
-// Insertion sort is faster than selection sort on partially sorted arrays
+// Nothing happens until you reach 
+// 
 
 fn main() {
     let vec = vec![35, 39, 49, 75, 89, 19, 78, 85, 18, 84];
