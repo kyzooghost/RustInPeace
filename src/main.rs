@@ -1,55 +1,76 @@
 #![allow(non_snake_case)]
 #![allow(non_camel_case_types)]
 
-// p249 - Selection sort
-// p251 - Insertion sort
-// p259 - Shell sort
-// p264 - Exercises
+// p271 - In-place merge
+// p273 - Top-down, mergesort
+// p278 - Bottoms-up, mergesort
+// p284 - Exercises
 
-// 2.1.10
+// 2.2.3
 
-// Why not use selection sort for h-sorting in shellsort?
+// E A S Y Q U E S T I O N
+// Bottom-down mergesort trace
 
-// Because shell sort effectively runs through the entire array for each value of 'h'
-// You are forced to do an exchange in each run
-
-// Also as h decreases, array is partially sorted
-// Insertion sort is faster than selection sort on partially sorted arrays
 
 fn main() {
-    let vec = vec![35, 39, 49, 75, 89, 19, 78, 85, 18, 84];
-    println!("{:?}", "B" < "A");
-
-    let vec = vec!["E", "A", "S", "Y", "S", "H", "E", "L", "L", "S", "O", "R", "T", "Q", "U", "E", "S", "T", "I", "O", "N"];
-    let sorted_vec = shellSort(vec);
-    println!("{:?}", sorted_vec);
+    let mut vec = vec!["E", "A", "S" ,"Y", "Q", "U", "E", "S", "T", "I", "O", "N"];
+    merge_sort(&mut vec);
+    println!("{:?}", vec);
 }
 
-fn shellSort(mut vec: Vec<&str>) -> Vec<&str> {
-    let N = vec.len();
-    let mut swapped = false;
-    let mut h = 1;
-    while h < N / 3 {h = 3*h + 1}
+fn merge_sort<T: Copy + Ord + std::fmt::Debug>(array: &mut [T]) {
+    let length = array.len();
 
-    while h >= 1 {
-        for i in 0..N {
-            let mut j = i;
-            swapped = false;
-    
-            while j >= h && vec[j] < vec[j - h] {
-                vec.swap(j, j-h);
-                j = j - h;
-                swapped = true;
-            }
-
-            if swapped {
-                println!("i: {:?}, j: {:?}, h: {:?}", i, j, h);
-                println!("{:?}", vec);
-            }
+    let mut size = 1;
+    while size < length {
+        let mut low = 0;
+        while low < length - size {
+            let mut y: Vec<T> = array.to_vec();
+            merge(&array[low..low + size], &array[low + size..std::cmp::min(low + size + size - 1, length - 1)], &mut y[low..std::cmp::min(low + size + size - 1, length - 1)]);
+            array.copy_from_slice(&y);
+            low += (size + size);
         }
-        
-        h = h / 3;
+        size += size;
     }
 
-    vec
+	// if high <= low {return;}
+
+    // let length = array.len();
+    // let mid = (low + high) / 2;
+
+	// merge_sort(&mut array[0..length/2], low, mid);
+	// merge_sort(&mut array[length/2..length], mid + 1, high);
+ 
+	// let mut y: Vec<T> = array.to_vec();
+	// merge(&array[0..length/2], &array[length/2..length], &mut y[..]);
+	// array.copy_from_slice(&y);
+}
+
+// Ah yes, you do need a mutable ref in Rust, to get over 'moving'
+fn merge<T: Copy + PartialOrd + std::fmt::Debug>(left: &[T], right: &[T], array: &mut [T]) {
+    assert_eq!(left.len() + right.len(), array.len());
+    let mut i = 0;
+    let mut j = 0;
+    let length = array.len();
+
+    for k in 0..length {
+        if i >= left.len() {
+            array[k] = right[j];
+            j += 1;
+        } else if j >= right.len() {
+            array[k] = left[i];
+            i += 1;
+        } else if left[i] < right[j] {
+            array[k] = left[i];
+            i += 1;
+        } else {
+            array[k] = right[j];
+            j += 1;
+        }
+    }
+
+    println!("{:?}", left);
+    println!("{:?}", right);
+    println!("{:?}", array);
+    println!("------");
 }
