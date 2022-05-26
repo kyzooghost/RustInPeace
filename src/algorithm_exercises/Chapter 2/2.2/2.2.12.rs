@@ -6,17 +6,21 @@
 // p278 - Bottoms-up, mergesort
 // p285 - Exercises
 
-// 2.2.13
+// 2.2.12
 
-// Lower bound for average case. 
+// Sublinear extra space. 
 
-// Prove that the expected number of compares used by 
-// any compare-based sorting algorithm must be at least 
-// ~N lg N (assuming that all possible orderings of the input are equally likely). 
+// Develop a merge implementation that reduces 
+// the extra space requirement to max(M, N/M), 
+// based on the following idea: 
 
-// Hint: The expected number of compares is at least the external path length 
-// of the compare tree (the sum of the lengths of the paths from the root to all leaves), 
-// which is minimized when it is balanced.
+// Divide the array into N/M blocks of size M 
+// (for simplicity in this description, assume 
+// that N is a multiple of M). Then, (i) considering 
+// the blocks as items with their 
+// first key as the sort key, sort them using selection sort; 
+// and (ii) run through the array merging the first block with the second, 
+// then the second block with the third, and so forth.
 
 fn main() {
     let mut vec = vec!["E", "A", "S" ,"Y", "Q", "U", "E", "S", "T", "I", "O", "N"];
