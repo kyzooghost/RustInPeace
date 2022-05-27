@@ -1,31 +1,28 @@
 #![allow(non_snake_case)]
 #![allow(non_camel_case_types)]
 
-mod utils {
-    pub mod LinkedList;
-}
-
 // p271 - In-place merge
 // p273 - Top-down, mergesort
 // p278 - Bottoms-up, mergesort
-// p286 - Exercises
+// p285 - Exercises
 
-// 2.2.17
+// 2.2.16
 
-// Natural mergesort for linked lists
+// Natural mergesort. 
+
+// Write a version of bottom-up mergesort that takes advantage of order 
+// in the array by proceeding as follows each time it needs to find two arrays to merge: 
+// find a sorted subarray (by incrementing a pointer until finding an entry that is 
+// smaller than its predecessor in the array), then find the next, then merge them. 
+// Analyze the running time of this algorithm in terms of the array size and the number of
+// maximal increasing sequences in the array.
+
+// Urgh, it's a straightforward concept but coding it in Rust without the for-loop syntax I'm used to is X.X
 
 fn main() {
-    // Convert vector to linked list
-    use utils::LinkedList::List as LinkedList;
-    let mut list = LinkedList::new();
-    let vec = vec!["E", "A", "S" ,"Y", "Q", "U", "E", "S", "T", "I", "O", "N"];
-    for element in vec {list.insert_at_head(element);}
-    println!("{:?}", list.peek_at_tail());
-    println!("{:?}", list.peek_at_head());
-    println!("{:?}", list.peek_at_index(0));
-    println!("{:?}", list.peek_at_index(1));
-    println!("{:?}", list.peek_at_index(2));
-    println!("{:?}", list.peek_at_index(3));
+    let mut vec = vec!["E", "A", "S" ,"Y", "Q", "U", "E", "S", "T", "I", "O", "N"];
+    merge_sort(&mut vec);
+    println!("{:?}", vec);
 }
 
 fn merge_sort<T: Copy + Ord + std::fmt::Debug>(array: &mut [T]) {
