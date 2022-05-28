@@ -10,7 +10,25 @@ mod utils {
 // p278 - Bottoms-up, mergesort
 // p286 - Exercises
 
-// 2.2.19
+// 2.2.18
+
+// Shuffling a linked list
+// Divide and conquer to shuffle in O(n lg n) time, and O(lg) space
+
+// Wtf is shuffling?
+// If it's a minor variation on merge sort then you get the O(n lg n) time, idk about O(lg) space
+
+// Bottom-up shuffle?
+// So shuffle is mixing up the order, swapping around elements
+// So [x, y] becomes [y, x], and [1, 2, 3, 4] becomes [3, 4, 1, 2]
+// If you keep 'shuffling' in 2^n groups, there are 'N' swaps per level and 'lg N' levels so O(N lg N) swaps
+// You should be able to do this in place, so O(1) space? That feels wrong hmm.
+// The way I'm thinking about it, you don't need an extra data structures
+
+// Just low, mid, high in shuffle(), then loop 'remove from high -> insert at low' for [mid..high]
+// That is an in-place shuffle
+
+// The nice property of a linked list here, over an array, is that removing and inserting from an arbitrary index is O(1) and not O(n)
 
 use utils::LinkedList::List as LinkedList;
 use std::cmp::min as min;

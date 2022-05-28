@@ -138,6 +138,7 @@ impl<T> List<T> {
     }
 
     // We count with index 0 => tail, 'index == self.size - 1' => head
+    // Maintain index of items to the left - [0..index]
     pub fn remove_at_index(&mut self, index: usize) -> Option<T> {
         if index + 1 > self.size {return None}
         else if index == 0 {self.remove_from_tail()}
@@ -166,7 +167,10 @@ impl<T> List<T> {
     }
 
     // We count with index 0 => tail, 'index == self.size - 1' => head
-    // This will insert elem into the linked list at index, and will right-shift any existing elements at index..head
+    // TAIL >> HEAD
+    // TAIL = index 0, HEAD = index self.size() - 1
+    // Insert elem at index, and right-shift any elements from [index..head]
+    // Maintains indexes of items [0..index]
     pub fn insert_at_index(&mut self, index: usize, elem: T) {
         if index > self.size {panic!("cannot insert at this index")}
         else if index == 0 {self.insert_at_tail(elem)}
@@ -234,6 +238,23 @@ impl<T> List<T> {
                 }
 
                 pointer_to_current_node_at_index.as_ref().map(|node| &node.elem)
+            }
+        }
+    }
+
+    pub fn peek_mut_at_index(&mut self, index: usize) -> Option<&T> {
+        if index > self.size {panic!("cannot peek at this index")}
+        else if index == 0 {self.peek_at_tail()}
+        else if index == self.size {self.peek_at_head()}
+        else {
+            unsafe {
+                let mut pointer_to_current_node_at_index = self.tail;
+
+                for _ in 0..index {
+                    pointer_to_current_node_at_index = (*pointer_to_current_node_at_index).next;
+                }
+
+                pointer_to_current_node_at_index.as_mut().map(|node| &node.elem)
             }
         }
     }
