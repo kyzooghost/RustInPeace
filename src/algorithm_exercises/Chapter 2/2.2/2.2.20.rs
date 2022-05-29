@@ -6,22 +6,8 @@
 // p278 - Bottoms-up, mergesort
 // p286 - Exercises
 
-// 2.2.21
-
-// Triplicates. 
-// Given three lists of N names each, devise a linearithmic algorithm to determine.
-// If there is any name common to all three lists, and if so, return the first such name.
-
-// Doesn't say if the lists are sorted or not yet
-// Let's use merge sort to sort each list, so ~3 N lg (N) time cost for this
-// Then collect all elements into a hash map "element => count" ~N
-
-// Iterate through hash map entry, and if count >= 2, (Outer loop ~N)
-// Binary search through each of the three lists, and if get >=2 positive results then return the name (Inner loop ~3 lg N)
-
-// ~6 N lg N + N 
-// O (N lg N)
-
+// 2.2.20
+// Indirect merge sort - does not rearrange array, but returns perm[] that is the rearranged array
 
 fn main() {
     let vec = vec!["E", "A", "S" ,"Y", "Q", "U", "E", "S", "T", "I", "O", "N", "E", "A", "S" ,"Y", "Q", "U", "E", "S", "T", "I", "O", "N", "E", "A", "S" ,"Y", "Q", "U", "E", "S", "T", "I", "O", "N", "E", "A", "S" ,"Y", "Q", "U", "E", "S", "T", "I", "O", "N"];
