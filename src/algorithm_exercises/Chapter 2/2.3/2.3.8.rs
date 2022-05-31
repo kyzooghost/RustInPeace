@@ -4,16 +4,22 @@
 // p289 - Quick sort
 // p291 - Partition
 // p299 - Three-way quicksort
-// p305 - Exercises
+// p303 - Exercises
 
-// 2.3.16
+// 2.3.8
 
-// Best case - Each partition splits the array into two
+// About how many compares will Quick.sort() make when sorting an array of N items that are all equal?
+
+// Nvm, N compares in each partition()
+// Element will be put into the middle each time
+// So if 8 elements
+// 8 => 4 + 4 => 2 + 2
+// N ln N
 
 fn main() {
     use rand::{thread_rng, seq::SliceRandom};
-    let mut vec = vec!["B", "A", "B" ,"A", "B", "A", "B", "A", "C", "A", "D", "A", "B", "R", "A"];
-    // vec.shuffle(&mut thread_rng());
+    let mut vec = vec!["E", "A", "S" ,"Y", "Q", "U", "E", "S", "T", "I", "O", "N"];
+    vec.shuffle(&mut thread_rng());
     quicksort_3_way(&mut vec);
     println!("{:?}", vec);
 }
@@ -23,8 +29,6 @@ fn quicksort_3_way<T: Copy + Ord + std::fmt::Debug>(array: &mut [T]) {
     if array.len() <= 1 {
         return
     }
-
-    println!("{:?}", array);
 
     let mut lt = 0;
     let mut i = lt + 1;

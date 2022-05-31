@@ -4,11 +4,16 @@
 // p289 - Quick sort
 // p291 - Partition
 // p299 - Three-way quicksort
-// p305 - Exercises
+// p304 - Exercises
 
-// 2.3.16
+// 2.3.13
 
-// Best case - Each partition splits the array into two
+// What is the recursive depth of quicksort, in the best, worst, and average cases? 
+// This is the size of the stack that the system needs to keep track of the recursive calls.
+
+// Worst case - N
+// Best case - lg N
+// Average case - ~lg N
 
 fn main() {
     use rand::{thread_rng, seq::SliceRandom};
