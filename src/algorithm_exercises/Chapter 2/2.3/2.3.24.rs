@@ -27,7 +27,13 @@ fn main() {
 
 fn quicksort<T: Copy + Ord + std::fmt::Debug>(array: &mut [T]) {
     if array.len() <= 1 {return}
+    let j = partition_sample(array);
+    let length = array.len();
+    quicksort(&mut array[0..j]);
+    quicksort(&mut array[j+1..length]);
+}
 
+fn partition_sample<T: Copy + Ord + std::fmt::Debug>(array: &mut [T]) -> usize {
     // Find biggest k such as 2^k - 1 < array.len()
     let mut k = 1;
     while 2^(k+1) - 1 < array.len() {k += 1;}
@@ -35,43 +41,10 @@ fn quicksort<T: Copy + Ord + std::fmt::Debug>(array: &mut [T]) {
     // Sort first k 
     insertion_sort(&mut array[0..k]);
 
-    let j = partition(array);
-    let length = array.len();
-    quicksort(&mut array[0..j]);
-    quicksort(&mut array[j+1..length]);
-}
-
-fn partition<T: Copy + Ord + std::fmt::Debug>(array: &mut [T]) -> usize {
-    // Can only do median-of-three if there are >= 3 elements
-    let pivot = array[0];
-    let mut i = 1;
-    let mut j = array.len() - 1;
-
-    loop {
-        // Scan --> until find array[i] > pivot
-        while array[i] <= pivot {
-            if i == array.len() - 1 {break;}
-            i += 1;
-        }
-
-        // Scan <-- until find array[j] < pivot>
-        while pivot < array[j] {
-            j -= 1;
-        }
-
-        if i >= j {break;}
-
-        array.swap(i, j);
-    }
-
-    array.swap(0, j);
-
-    j
-}
-
-fn partition_sample<T: Copy + Ord + std::fmt::Debug>(array: &mut [T]) -> usize {
     // Find median, and swap into pivot position
-    let pivot = array[0];
+    let pivot = array[k / 2];
+    array.swap(0, k / 2);
+
     let mut i = 1;
     let mut j = array.len() - 1;
 
