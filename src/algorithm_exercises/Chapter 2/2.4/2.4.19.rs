@@ -1,19 +1,12 @@
 #![allow(non_snake_case)]
 #![allow(non_camel_case_types)]
 
-// p331 Exercises
+// p330 Exercises
 
-// 2.4.21
-// Explain how to use a priority queue to implement the stack and queue
+// 2.4.19
 
-// Stack
-// What is push and pop?
-// We need to use an indexed priority queue, where each element inserted into the stack / queue
-// is given an index corresponding to its placement
-
-// Push, enqueue = insert(index, item). Keep incrementing the index as you push/enqueue more items in
-// Pop = delete(last index)
-// Enqueue = delete(first index)
+// Implement the constructor for MaxPQ that takes an array of items as argument, 
+// using the bottom-up heap construction method described on page 323 in the text.
 
 pub struct MaxPQ<T> {
     heap: Vec<Option<T>>,

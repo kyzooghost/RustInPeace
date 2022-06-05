@@ -1,19 +1,47 @@
 #![allow(non_snake_case)]
 #![allow(non_camel_case_types)]
 
-// p331 Exercises
+// p330 Exercises
 
-// 2.4.21
-// Explain how to use a priority queue to implement the stack and queue
+// 2.4.20
+// Prove that sink-based heap construction uses fewer than 2N compares and fewer than N exchanges.
 
-// Stack
-// What is push and pop?
-// We need to use an indexed priority queue, where each element inserted into the stack / queue
-// is given an index corresponding to its placement
+// So the code to analyze is
 
-// Push, enqueue = insert(index, item). Keep incrementing the index as you push/enqueue more items in
-// Pop = delete(last index)
-// Enqueue = delete(first index)
+/*
+
+        let mut k = length / 2;
+        
+        while k >= 1 {
+            new_pq.sink(k);
+            k -= 1;
+        }
+
+*/
+
+// Sink will be called (N / 2) - 1 times
+
+/*
+        while 2*index <= self.size {
+            let mut j = 2 * index;
+            if j < self.size && self.heap[j] < self.heap[j + 1] {j += 1}
+            if self.heap[index] >= self.heap[j] {break}
+            self.heap.swap(index, j);
+            index = j;
+        }   
+*/
+
+// Within each sink, there are two compares and one exchange for each while loop
+// So minimum, N compares and N/2 exchanges
+// Need to prove that amortized, the sink while loop runs <= 2 times
+
+// For subheap for height 2, it will run once in worst case
+// Height 3, run twice in worst case
+// Height 4, run three times in worst case
+
+// For heap with N elements, there will be N/2 subheaps of size 1, N/4 subheaps of size 2, N/8 subheaps of size 3, etc
+// So number of sink loops = N/4 + N/8 * 2 + N/16 * 3 + ...
+// 1 + (1/2) * 2 + (1/4) * 3 + (1/8) * 4 = Sum (2^(-n) * n) = Sum ( n / 2^n ) which converges to 2
 
 pub struct MaxPQ<T> {
     heap: Vec<Option<T>>,
