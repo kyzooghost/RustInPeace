@@ -3,7 +3,7 @@
 
 // p389 Exercises
 
-// 3.1.5 Implement delete for SequentialST
+// 3.1.4 Develop Time and Event ADTs
 
 // p363 ADT for ST
 // p366 ST API
@@ -143,20 +143,16 @@ impl<T: Copy + Clone + PartialOrd + PartialEq + std::fmt::Debug,
         let rank = self.rank(key);
         Some(self.list.peek_at_index(rank).unwrap().key)
     }
-
-    pub fn delete(&mut self, key: T) -> Option<T> {
-        let rank = self.rank(key);
-
-        // If match current key, change the value
-        if rank < self.size && self.list.peek_at_index(rank).unwrap().key == key {
-            let node = self.list.remove_at_index(rank);
-            self.size -= 1;
-            return Some(node.unwrap().key)
-        }
-
-        None
-    }
 }
 
+use chrono::{NaiveDateTime};
+use chrono::format::ParseError;
+
+
 fn main() {
+    let time_1 = NaiveDateTime::parse_from_str("2015-09-05 23:56:04", "%Y-%m-%d %H:%M:%S");
+    let time_2 = NaiveDateTime::parse_from_str("2015-09-05 23:56:07", "%Y-%m-%d %H:%M:%S");
+    println!("{:?}", time_1.unwrap() < time_2.unwrap());
+
+    // Err, NaiveDateTime is your ADT lol
 }
