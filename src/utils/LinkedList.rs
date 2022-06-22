@@ -242,10 +242,10 @@ impl<T> List<T> {
         }
     }
 
-    pub fn peek_mut_at_index(&mut self, index: usize) -> Option<&T> {
+    pub fn peek_mut_at_index(&mut self, index: usize) -> Option<&mut T> {
         if index > self.size {panic!("cannot peek at this index")}
-        else if index == 0 {self.peek_at_tail()}
-        else if index == self.size {self.peek_at_head()}
+        else if index == 0 {self.peek_mut_at_tail()}
+        else if index == self.size {self.peek_mut_at_head()}
         else {
             unsafe {
                 let mut pointer_to_current_node_at_index = self.tail;
@@ -254,7 +254,7 @@ impl<T> List<T> {
                     pointer_to_current_node_at_index = (*pointer_to_current_node_at_index).next;
                 }
 
-                pointer_to_current_node_at_index.as_mut().map(|node| &node.elem)
+                pointer_to_current_node_at_index.as_mut().map(|node| &mut node.elem)
             }
         }
     }
