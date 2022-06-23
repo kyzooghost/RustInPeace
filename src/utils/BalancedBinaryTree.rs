@@ -13,21 +13,21 @@ struct Node<T: Clone> {
     right_child: *mut Node<T>
 }
 
-pub struct BinaryTree<T: Clone> {
+pub struct BalancedBinaryTree<T: Clone> {
     root: *mut Node<T>,
     last_node: *mut Node<T>,
     size: usize
 }
 
-pub struct IntoIter<T: Clone>(BinaryTree<T>);
+pub struct IntoIter<T: Clone>(BalancedBinaryTree<T>);
 
-impl<T: Clone> BinaryTree<T> {
+impl<T: Clone> BalancedBinaryTree<T> {
     pub fn size(&self) -> usize {
         self.size
     }
 
     pub fn new() -> Self {
-        BinaryTree { root: ptr::null_mut(), last_node: ptr::null_mut(), size: 0 }
+        BalancedBinaryTree { root: ptr::null_mut(), last_node: ptr::null_mut(), size: 0 }
     }
 
     pub fn insert(&mut self, elem: T) {
@@ -340,7 +340,7 @@ impl<T: Clone> BinaryTree<T> {
     }
 }
 
-impl<T: Clone> Drop for BinaryTree<T> {
+impl<T: Clone> Drop for BalancedBinaryTree<T> {
     fn drop(&mut self) {
         while let Some(_) = self.remove_last_node() { }
     }
