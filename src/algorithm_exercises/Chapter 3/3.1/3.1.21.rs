@@ -3,12 +3,17 @@
 
 // p391 Exercises
 
-// 3.1.23 Analysis of binary search. 
+// 3.1.22 Self-organizing search. 
 
-// Prove that the maximum number of compares used for a binary search 
-// in a table of size N is precisely the number of bits in the binary representation of N, 
-//because the operation of shifting 1 bit to the right converts the 
-// binary representation of N into the binary representation of ⎣N/2⎦.
+// A self-organizing search algorithm is one that rearranges items 
+// to make those that are accessed frequently likely to be found early in the search. 
+
+// Modify your search implementation for Exercise 3.1.2 to perform the following action 
+// on every search hit: move the key-value pair found to the beginning of the list, 
+// moving all pairs between the beginning of the list and the vacated position 
+// to the right one position. This procedure is called the move-to-front heuristic.
+
+// Search hit -> Move key-value pair to beginning of list
 
 pub struct ArrayST<T, U> {
     size: usize,
