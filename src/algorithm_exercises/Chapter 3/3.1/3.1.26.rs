@@ -3,15 +3,12 @@
 
 // p391 Exercises
 
-// 3.1.28 - 30
+// 3.1.26
 
-// Ordered insertions. 
-// Modify BinarySearchST so that inserting a key that is larger 
-// than all keys in the table takes constant time 
-// (so that building a table by calling put() for keys that are in order takes linear time).
+// Frequency count from a dictionary. Modify FrequencyCounter to take the name of a dictionary file as its argument, count frequencies of the words from standard input that are also in that file, and print two tables of the words with their frequencies, one sorted by frequency, the other sorted in the order found in the dictionary file.
 
-// Do deleteMin() and deleteMax() operations
-// Add assertions to BinarySearchST
+// If you use BinarySearchST with key as word, that is sorted in dictionary file order
+// If you use BinarySearchST with frequency as key, that is sorted in frequency
 
 pub struct Cache<T> {
     rank: usize,
@@ -105,14 +102,6 @@ impl<T: Copy + Clone + PartialOrd + PartialEq + std::fmt::Debug,
             None => {}
         }
 
-        // O(1) to insert key that is larger than current max
-        if !self.isEmpty() && key > self.max().unwrap() {
-            self.keys.push(key);
-            self.values.push(value);
-            self.size += 1;
-            return
-        }
-
         // Find rank
         let i = self.rank(key);
 
@@ -149,7 +138,6 @@ impl<T: Copy + Clone + PartialOrd + PartialEq + std::fmt::Debug,
         self.values[i] = value;
 
         self.size += 1;
-        assert!(self.check_keys_sorted(), "keys not sorted");
     }
 
     pub fn min(&self) -> Option<T> {
@@ -200,64 +188,6 @@ impl<T: Copy + Clone + PartialOrd + PartialEq + std::fmt::Debug,
         }
 
         self.size -= 1;
-        assert!(self.check_keys_sorted(), "keys not sorted");
-    }
-
-    pub fn deleteMin(&mut self) {
-        if self.size == 0 {panic!("size 0, cannot delete")}
-
-        let min = self.min().unwrap();
-
-        // Check cache
-        match &self.cache {
-            // Delete cache if cache hit
-            Some(cache_struct) => {
-                if cache_struct.key == min {
-                    self.cache = None;
-                }
-            },
-            None => {}
-        }
-
-        self.keys.remove(0);
-        self.values.remove(0);
-
-        self.size -= 1;
-        assert!(self.check_keys_sorted(), "keys not sorted");
-    }
-
-    pub fn deleteMax(&mut self) {
-        if self.size == 0 {panic!("size 0, cannot delete")}
-
-        let max = self.max().unwrap();
-
-        // Check cache
-        match &self.cache {
-            // Delete cache if cache hit
-            Some(cache_struct) => {
-                if cache_struct.key == max {
-                    self.cache = None;
-                }
-            },
-            None => {}
-        }
-
-        self.keys.pop();
-        self.values.pop();
-        self.size -= 1;
-
-        assert!(self.check_keys_sorted(), "keys not sorted");
-    }
-
-    fn check_keys_sorted(&self) -> bool {
-        let mut i = 0;
-
-        while i + 1 <= self.keys.len() - 1 {
-            if self.keys[i + 1] < self.keys[i] {return false}
-            i += 1;
-        }
-
-        true
     }
   
 }
@@ -276,15 +206,7 @@ fn main() {
     ST.put("I", 9);
     ST.put("O", 10);
     ST.put("N", 11);
-
-    println!("{:?}", ST.size);
-    println!("{:?}", ST.keys);
-    println!("{:?}", ST.values);
-
-    ST.deleteMax();
-    ST.deleteMax();
-    ST.deleteMin();
-
+    // println!("{:?}", ST.delete("A"));
     println!("{:?}", ST.size);
     println!("{:?}", ST.keys);
     println!("{:?}", ST.values);
