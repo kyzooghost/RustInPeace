@@ -1,7 +1,7 @@
 #![allow(non_snake_case)]
 #![allow(non_camel_case_types)]
 
-// Non-recursive implementation of get(), put()
+// Non-recursive implementation of min(), max(), floor(), ceiling()
 
 use std::ptr;
 
@@ -181,52 +181,26 @@ impl<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + Part
         }    
     }
 
-    // If search hit, change corresponding node value
-    // Else, add new node
-    // Recursive call here, keep re-assigning nodes on each level
-    fn _put(&mut self, node_pointer: *mut Node<T, U>, key: T, value: U) -> *mut Node<T, U> {
-        if node_pointer.is_null() {
-            // If recurse into non-existent node, create a node and return it
-            let new_node = Box::into_raw(
-                Box::new
-                    (Node {
-                        key: key, 
-                        value: value, 
-                        subtree_size: 1,
-                        left_child: ptr::null_mut(), 
-                        right_child: ptr::null_mut()
-                    })
-            );
-
-            return new_node
-        }
-
-        unsafe {
-            // If given key < root key, recurse into left
-            if key < (*node_pointer).key {
-                (*node_pointer).left_child = self._put((*node_pointer).left_child, key, value)
-            // Else if given key > root key, recurse into right
-            } else if key > (*node_pointer).key {
-                (*node_pointer).right_child = self._put((*node_pointer).right_child, key, value)
-            // Else search hit
-            } else {
-                (*node_pointer).value = value;
-            }
-
-            // Increment counts
-            (*node_pointer).subtree_size = self._subtree_size((*node_pointer).left_child) + self._subtree_size((*node_pointer).right_child) + 1;            
-        }
-
-        // Mmmm, intuitively this feels redundant in most cases
-        return node_pointer
-    }
-
     pub fn min(&self) -> Option<T> {
         if self.is_empty() {return None}
+
+        let mut pointer = self.root;
+
         unsafe {
-            Some( (*self._min(self.root)).key )
+            while !(*pointer).left_child.is_null() {
+                pointer = (*pointer).left_child;
+            }
+
+            return Some ((*pointer).key)
         }
     }
+
+    // pub fn min(&self) -> Option<T> {
+    //     if self.is_empty() {return None}
+    //     unsafe {
+    //         Some( (*self._min(self.root)).key )
+    //     }
+    // }
 
     fn _min(&self, node_pointer: *mut Node<T, U>) -> *mut Node<T, U> {
         // Keep recursing down left subchild, until hit null pointer
@@ -554,5 +528,5 @@ fn main() {
     println!("{:?}", bst.get("I"));
     println!("{:?}", bst.get("O"));
     println!("{:?}", bst.get("N"));
-    // println!("{:?}", bst.get("I"));
+    println!("{:?}", bst.min());
 }
