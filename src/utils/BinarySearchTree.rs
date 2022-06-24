@@ -365,6 +365,31 @@ impl<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + Part
     pub fn into_iter(self) -> IntoIter<T, U> {
         IntoIter(self)
     }
+
+    pub fn height(&self) -> usize {
+        // Start from root
+        // Can either go down left subchild or right subchild, go down subchild with most children
+        // With each recursion, add height by 1
+        self._height(self.root, 0)
+    }
+
+    pub fn _height(&self, pointer: *mut Node<T, U>, accum_height: usize) -> usize {
+        if pointer.is_null() {return accum_height}
+
+        unsafe {
+            if (*pointer).left_child.is_null() {return self._height((*pointer).right_child, accum_height + 1)}
+            else if (*pointer).right_child.is_null() {return self._height((*pointer).left_child, accum_height + 1)}
+            // Both left and right child are present, choose child with bigger # of subchildren
+            else {
+                if (*(*pointer).left_child).subtree_size > (*(*pointer).right_child).subtree_size {
+                    return self._height((*pointer).left_child, accum_height + 1)
+                } else {
+                    return self._height((*pointer).right_child, accum_height + 1)
+                }
+            }
+        }
+    }
+
 }
 
 impl<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + PartialOrd + PartialEq + Copy> Drop for BinarySearchTree<T, U> {
