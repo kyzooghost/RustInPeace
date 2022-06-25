@@ -1,7 +1,18 @@
 #![allow(non_snake_case)]
 #![allow(non_camel_case_types)]
 
-// Non-recursive implementation of min(), max(), floor(), ceiling() 
+// 3.2.22
+
+// Prove that if a node in a BST has two children, its successor
+// has no left child and its predecessor has no right child.
+
+// If a node in a BST has two children
+// Predecessor must be in left subtree, Successor must be in right subtree
+
+// Successor must be the min() in right subtree, by definition of BST it cannot
+// have a left child.
+
+// Same argument for precessor in left subtree
 
 mod utils {pub mod BinarySearchTree;}
 use utils::BinarySearchTree::BinarySearchTree as BinarySearchTree;

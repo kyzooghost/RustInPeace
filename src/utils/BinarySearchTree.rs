@@ -390,6 +390,35 @@ impl<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + Part
         }
     }
 
+    pub fn all_keys(&self) -> Vec<T> {
+        assert!(!self.is_empty(), "empty tree has no range");
+        self.keys(self.min().unwrap(), self.max().unwrap())
+    }
+
+    pub fn keys(&self, low_key: T, high_key: T) -> Vec<T> {
+        let mut key_vec: Vec<T> = Vec::new();
+        self._keys(self.root, &mut key_vec, low_key, high_key);
+        key_vec
+    }
+
+    fn _keys(&self, pointer: *mut Node<T, U>, key_vec: &mut Vec<T>, low_key: T, high_key: T) {
+        if pointer.is_null() {return}
+
+        unsafe {
+            if low_key < (*pointer).key {
+                self._keys((*pointer).left_child, key_vec, low_key, high_key)
+            } 
+            
+            if low_key <= (*pointer).key && high_key >= (*pointer).key {
+                key_vec.push((*pointer).key);
+            } 
+            
+            if high_key > (*pointer).key {
+                self._keys((*pointer).right_child, key_vec, low_key, high_key)
+            }
+        }
+    }
+
 }
 
 impl<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + PartialOrd + PartialEq + Copy> Drop for BinarySearchTree<T, U> {
