@@ -1,7 +1,9 @@
 #![allow(non_snake_case)]
 #![allow(non_camel_case_types)]
 
-// Non-recursive implementation of min(), max(), floor(), ceiling() 
+// 3.2.29
+
+// Binary tree check. Write a recursive method isBinaryTree() that takes a Node as argument and returns true if the subtree count field N is consistent in the data struc- ture rooted at that node, false otherwise. Note : This check also ensures that the data structure has no cycles and is therefore a binary tree (!).
 
 mod utils {pub mod BinarySearchTree;}
 use utils::BinarySearchTree::BinarySearchTree as BinarySearchTree;
@@ -38,4 +40,6 @@ fn main() {
     println!("{:?}", bst.size());
     println!("------", );
     println!("{:?}", bst.all_keys());
+    println!("{:?}", bst.isBinaryTree(bst.root));
+
 }

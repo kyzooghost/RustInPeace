@@ -1,6 +1,6 @@
 use std::ptr;
 
-struct Node<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + PartialOrd + PartialEq + Copy> {
+pub struct Node<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + PartialOrd + PartialEq + Copy> {
     key: T,
     value: U,
     subtree_size: usize,
@@ -9,7 +9,7 @@ struct Node<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone
 }
 
 pub struct BinarySearchTree<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + PartialOrd + PartialEq + Copy> {
-    root: *mut Node<T, U>,
+    pub root: *mut Node<T, U>,
 }
 
 pub struct IntoIter<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + PartialOrd + PartialEq + Copy>(BinarySearchTree<T, U>);
@@ -416,6 +416,22 @@ impl<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + Part
             if high_key > (*pointer).key {
                 self._keys((*pointer).right_child, key_vec, low_key, high_key)
             }
+        }
+    }
+
+    pub fn isBinaryTree(&self, pointer: *mut Node<T, U>) -> bool {
+        // Check self, and left and right children
+
+        if pointer.is_null() {return true}
+
+        unsafe {
+            let current_node_status = self._subtree_size(pointer) == 1 + self._subtree_size((*pointer).left_child) + self._subtree_size((*pointer).right_child);
+
+            let left_child_status = self.isBinaryTree((*pointer).left_child);
+
+            let right_child_status = self.isBinaryTree((*pointer).right_child);
+
+            current_node_status && left_child_status && right_child_status
         }
     }
 
