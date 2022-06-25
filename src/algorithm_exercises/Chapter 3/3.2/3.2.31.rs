@@ -44,6 +44,6 @@ fn main() {
     println!("{:?}", bst.size());
     println!("------", );
     println!("{:?}", bst.all_keys());
-    println!("{:?}", bst.rank(bst.select(2).unwrap()));
+    println!("{:?}", bst.isBinaryTree(bst.root));
 
 }
