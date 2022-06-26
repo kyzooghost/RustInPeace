@@ -158,19 +158,24 @@ impl<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + Part
 
     // Check that all paths from root to null link have same number of black links
     fn isBalanced(&self) -> bool {
-        self._isBalanced(self.root)
-    }
+        // Count black nodes from root to min
+        let mut blackNodes = 0;
+        let mut pointer = self.root;
 
-    fn _isBalanced(&self, pointer: *mut Node<T, U>) -> bool {
-
-        if self._height((*pointer).left_child, 0) == self._height((*pointer).right_child, 0) - 1 ||
-            self._height((*pointer).left_child, 0) == self._height((*pointer).right_child, 0) ||
-            self._height((*pointer).left_child, 0) == self._height((*pointer).right_child, 0) + 1 
-        {
-            return true
+        while !pointer.is_null() {
+            if !self.isRed(pointer) {blackNodes += 1;}
+            pointer = (*pointer).left_child; 
         }
 
-        false
+        self._isBalanced(self.root, blackNodes)
+    }
+
+    fn _isBalanced(&self, pointer: *mut Node<T, U>, blackNodes: isize) -> bool {
+        if pointer.is_null() {return blackNodes == 0}
+
+        if !self.isRed(pointer) {blackNodes -= 1}
+
+        self._isBalanced((*pointer).left_child, blackNodes) &&  self._isBalanced((*pointer).right_child, blackNodes)
     }
 
     pub fn get(&self, key: T) -> Option<U> {
