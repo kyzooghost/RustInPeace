@@ -6,25 +6,21 @@
 // p439 put()
 // p451 Exercises
 
-// 3.3.33 
+// 3.2.29
 
-// Certification. 
+// Optimal storage. 
+// Modify RedBlackBST so that it does not use any extra storage for the color bit, 
+// based on the following trick: 
+// To color a node red, swap its two links. 
+// Then, to test whether a node is red, test whether its left child is larger than its right child. 
+// You have to modify the compares to accommodate the possible link swap, 
+// and this trick replaces bit compares with key compares that are presumably more expensive, 
+// but it shows that the bit in the nodes can be eliminated, if necessary.
 
-// Add to RedBlackBST a method is23() to check that no node 
-// is connected to two red links and that there are no right-leaning red links 
-// and a method isBalanced() to check that all paths from the root to a null link 
-// have the same number of black links. 
-
-// Combine these methods with code from isBST() in Exercise 3.2.32 to create a method isRedBlackBST() 
-// that checks that the tree is a red-black BST.
+// Swap two links to colour a node red
+// To test if node red, compare if left child larger than right child
 
 use std::ptr;
-
-#[derive(PartialEq, Clone)]
-enum Colour {
-    Red,
-    Black
-}
 
 pub struct Node<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + PartialOrd + PartialEq + Copy> {
     key: T,
@@ -32,7 +28,6 @@ pub struct Node<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: C
     subtree_size: usize,
     left_child: *mut Node<T, U>,
     right_child: *mut Node<T, U>,
-    colour: Colour
 }
 
 pub struct BinarySearchTree<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + PartialOrd + PartialEq + Copy> {
@@ -59,8 +54,134 @@ impl<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + Part
     }
 
     fn isRed(&self, node_pointer: *mut Node<T, U>) -> bool {
-        if node_pointer.is_null() {return false}
-        (*node_pointer).colour == Colour::Red
+        if node_pointer.is_null() || 
+            ( (*node_pointer).left_child.is_null() && (*node_pointer).right_child.is_null() ) 
+        {
+            return false
+        }
+
+        // Case - both children exist
+        else if !node_pointer.is_null() &&
+            !(*node_pointer).left_child.is_null() && 
+            !(*node_pointer).right_child.is_null()
+        {
+            return (*node_pointer).key < (*(*node_pointer).left_child).key &&
+            (*node_pointer).key > (*(*node_pointer).right_child).key 
+        }
+
+        // Case - only right child exists
+        else if !node_pointer.is_null() &&
+            (*node_pointer).left_child.is_null() && 
+            !(*node_pointer).right_child.is_null()
+            
+        {
+            return (*node_pointer).key > (*(*node_pointer).right_child).key 
+        }
+
+        // Case - only left child exists
+        else if !node_pointer.is_null() &&
+            !(*node_pointer).left_child.is_null() && 
+            (*node_pointer).right_child.is_null()
+            
+        {
+            return (*node_pointer).key < (*(*node_pointer).left_child).key 
+        }
+
+        false
+    }
+
+    fn makeRed(&mut self, node_pointer: *mut Node<T, U>) {
+
+        unsafe {
+            // Case - Either null Node, or both children null nodes
+            if node_pointer.is_null() || 
+                ( (*node_pointer).left_child.is_null() && (*node_pointer).right_child.is_null() ) 
+            {
+                return
+            }
+
+            // Case - both children exist
+            else if !node_pointer.is_null() &&
+                !(*node_pointer).left_child.is_null() && 
+                !(*node_pointer).right_child.is_null() && 
+                (*node_pointer).key > (*(*node_pointer).left_child).key &&
+                (*node_pointer).key < (*(*node_pointer).right_child).key 
+            {
+                let left_node = (*node_pointer).left_child;
+                let right_node = (*node_pointer).right_child;
+                (*node_pointer).left_child = right_node;
+                (*node_pointer).right_child = left_node;
+            }
+
+            // Case - only right child exists
+            else if !node_pointer.is_null() &&
+                (*node_pointer).left_child.is_null() && 
+                !(*node_pointer).right_child.is_null() && 
+                (*node_pointer).key < (*(*node_pointer).right_child).key 
+            {
+                let right_node = (*node_pointer).right_child;
+                (*node_pointer).left_child = right_node;
+                (*node_pointer).right_child = ptr::null_mut();
+            }
+
+            // Case - only left child exists
+            else if !node_pointer.is_null() &&
+                !(*node_pointer).left_child.is_null() && 
+                (*node_pointer).right_child.is_null() && 
+                (*node_pointer).key > (*(*node_pointer).left_child).key 
+            {
+                let left_node = (*node_pointer).left_child;
+                (*node_pointer).right_child = left_node;
+                (*node_pointer).left_child = ptr::null_mut();
+            }
+        }
+    }
+
+    fn makeBlack(&mut self, node_pointer: *mut Node<T, U>) {
+
+        unsafe {
+            // Case - Either null Node, or both children null nodes
+            if node_pointer.is_null() || 
+                ( (*node_pointer).left_child.is_null() && (*node_pointer).right_child.is_null() ) 
+            {
+                return
+            }
+
+            // Case - both children exist
+            else if !node_pointer.is_null() &&
+                !(*node_pointer).left_child.is_null() && 
+                !(*node_pointer).right_child.is_null() && 
+                (*node_pointer).key < (*(*node_pointer).left_child).key &&
+                (*node_pointer).key > (*(*node_pointer).right_child).key 
+            {
+                let left_node = (*node_pointer).left_child;
+                let right_node = (*node_pointer).right_child;
+                (*node_pointer).left_child = right_node;
+                (*node_pointer).right_child = left_node;
+            }
+
+            // Case - only right child exists
+            else if !node_pointer.is_null() &&
+                (*node_pointer).left_child.is_null() && 
+                !(*node_pointer).right_child.is_null() && 
+                (*node_pointer).key > (*(*node_pointer).right_child).key 
+            {
+                let right_node = (*node_pointer).right_child;
+                (*node_pointer).left_child = right_node;
+                (*node_pointer).right_child = ptr::null_mut();
+            }
+
+            // Case - only left child exists
+            else if !node_pointer.is_null() &&
+                !(*node_pointer).left_child.is_null() && 
+                (*node_pointer).right_child.is_null() && 
+                (*node_pointer).key < (*(*node_pointer).left_child).key 
+            {
+                let left_node = (*node_pointer).left_child;
+                (*node_pointer).right_child = left_node;
+                (*node_pointer).left_child = ptr::null_mut();
+            }
+        }
     }
 
     fn rotateLeft(&mut self, node_pointer: *mut Node<T, U>) -> *mut Node<T, U> {
@@ -106,71 +227,10 @@ impl<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + Part
             self.isRed((*node_pointer).right_child) &&
             !self.isRed(node_pointer)
         {
-                (*node_pointer).colour = Colour::Red;
-                (*(*node_pointer).left_child).colour = Colour::Black;
-                (*(*node_pointer).right_child).colour = Colour::Black;
+            self.makeRed(node_pointer);
+            self.makeBlack((*node_pointer).left_child);
+            self.makeBlack((*node_pointer).right_child);
         } 
-        else if 
-           !self.isRed((*node_pointer).left_child) &&
-            !self.isRed((*node_pointer).right_child) &&
-            self.isRed(node_pointer)
-        {
-            (*node_pointer).colour = Colour::Black;
-            (*(*node_pointer).left_child).colour = Colour::Red;
-            (*(*node_pointer).right_child).colour = Colour::Red;
-        }
-
-    }
-
-    fn moveRedLeft(&mut self, pointer: *mut Node<T, U>) -> *mut Node<T, U> {
-        self.flipColours(pointer);
-        if self.isRed((*(*pointer).right_child).left_child) {
-            (*pointer).right_child = self.rotateRight((*pointer).right_child);
-            pointer = self.rotateLeft(pointer);
-            self.flipColours(pointer);
-        }
-        return pointer
-    }
-
-    fn moveRedRight(&mut self, pointer: *mut Node<T, U>) -> *mut Node<T, U> {
-        self.flipColours(pointer);
-        if self.isRed((*(*pointer).left_child).left_child) {
-            pointer = self.rotateRight(pointer);
-            self.flipColours(pointer);
-        }
-        return pointer
-    }
-
-    // Check that no node is connected to two red links => Check both children are not red
-    // Check no right-learning red links
-    pub fn is23(self) -> bool {
-        self._is23(self.root)
-    }
-
-    pub fn _is23(self, pointer: *mut Node<T, U>) -> bool {
-        if pointer.is_null() {return true}
-
-        let bothChildrenNotRed = !self.isRed((*pointer).left_child) && !self.isRed((*pointer).right_child);
-        let noRightLeaningRedLink = !self.isRed((*pointer).right_child);
-               
-        bothChildrenNotRed && noRightLeaningRedLink && self._is23((*pointer).left_child) && self._is23((*pointer).right_child) 
-    }
-
-    // Check that all paths from root to null link have same number of black links
-    fn isBalanced(&self) -> bool {
-        self._isBalanced(self.root)
-    }
-
-    fn _isBalanced(&self, pointer: *mut Node<T, U>) -> bool {
-
-        if self._height((*pointer).left_child, 0) == self._height((*pointer).right_child, 0) - 1 ||
-            self._height((*pointer).left_child, 0) == self._height((*pointer).right_child, 0) ||
-            self._height((*pointer).left_child, 0) == self._height((*pointer).right_child, 0) + 1 
-        {
-            return true
-        }
-
-        false
     }
 
     pub fn get(&self, key: T) -> Option<U> {
@@ -201,7 +261,7 @@ impl<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + Part
 
     pub fn put(&mut self, key: T, value: U) {
         self.root = self._put(self.root, key, value); // ? Don't understand re-assigning self.root
-        (*self.root).colour = Colour::Black;
+        self.makeBlack(self.root);
     }
 
     // If search hit, change corresponding node value
@@ -218,7 +278,6 @@ impl<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + Part
                         subtree_size: 1,
                         left_child: ptr::null_mut(), 
                         right_child: ptr::null_mut(),
-                        colour: Colour::Red
                     })
             );
 
@@ -241,6 +300,15 @@ impl<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + Part
             }
 
             // Balance on the way up
+
+            if !(*node_pointer).left_child.is_null() && key == (*(*node_pointer).left_child).key {
+                self.makeBlack((*node_pointer).left_child)
+            }
+
+            if !(*node_pointer).right_child.is_null() && key == (*(*node_pointer).right_child).key {
+                self.makeBlack((*node_pointer).right_child)
+            }
+
             if self.isRed((*node_pointer).right_child) && !self.isRed((*node_pointer).left_child) {
                 node_pointer = self.rotateLeft(node_pointer);
             }
@@ -250,7 +318,7 @@ impl<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + Part
             }
 
             if self.isRed((*node_pointer).left_child) && self.isRed((*node_pointer).right_child) {
-                self.flipColours(node_pointer);
+                    self.flipColours(node_pointer);
             }
 
             // Increment counts

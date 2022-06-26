@@ -1,23 +1,3 @@
-#![allow(non_snake_case)]
-#![allow(non_camel_case_types)]
-
-// p434 rotateLeft(), rotateRight()
-// p436 flipColors()
-// p439 put()
-// p451 Exercises
-
-// 3.3.33 
-
-// Certification. 
-
-// Add to RedBlackBST a method is23() to check that no node 
-// is connected to two red links and that there are no right-leaning red links 
-// and a method isBalanced() to check that all paths from the root to a null link 
-// have the same number of black links. 
-
-// Combine these methods with code from isBST() in Exercise 3.2.32 to create a method isRedBlackBST() 
-// that checks that the tree is a red-black BST.
-
 use std::ptr;
 
 #[derive(PartialEq, Clone)]
@@ -110,67 +90,6 @@ impl<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + Part
                 (*(*node_pointer).left_child).colour = Colour::Black;
                 (*(*node_pointer).right_child).colour = Colour::Black;
         } 
-        else if 
-           !self.isRed((*node_pointer).left_child) &&
-            !self.isRed((*node_pointer).right_child) &&
-            self.isRed(node_pointer)
-        {
-            (*node_pointer).colour = Colour::Black;
-            (*(*node_pointer).left_child).colour = Colour::Red;
-            (*(*node_pointer).right_child).colour = Colour::Red;
-        }
-
-    }
-
-    fn moveRedLeft(&mut self, pointer: *mut Node<T, U>) -> *mut Node<T, U> {
-        self.flipColours(pointer);
-        if self.isRed((*(*pointer).right_child).left_child) {
-            (*pointer).right_child = self.rotateRight((*pointer).right_child);
-            pointer = self.rotateLeft(pointer);
-            self.flipColours(pointer);
-        }
-        return pointer
-    }
-
-    fn moveRedRight(&mut self, pointer: *mut Node<T, U>) -> *mut Node<T, U> {
-        self.flipColours(pointer);
-        if self.isRed((*(*pointer).left_child).left_child) {
-            pointer = self.rotateRight(pointer);
-            self.flipColours(pointer);
-        }
-        return pointer
-    }
-
-    // Check that no node is connected to two red links => Check both children are not red
-    // Check no right-learning red links
-    pub fn is23(self) -> bool {
-        self._is23(self.root)
-    }
-
-    pub fn _is23(self, pointer: *mut Node<T, U>) -> bool {
-        if pointer.is_null() {return true}
-
-        let bothChildrenNotRed = !self.isRed((*pointer).left_child) && !self.isRed((*pointer).right_child);
-        let noRightLeaningRedLink = !self.isRed((*pointer).right_child);
-               
-        bothChildrenNotRed && noRightLeaningRedLink && self._is23((*pointer).left_child) && self._is23((*pointer).right_child) 
-    }
-
-    // Check that all paths from root to null link have same number of black links
-    fn isBalanced(&self) -> bool {
-        self._isBalanced(self.root)
-    }
-
-    fn _isBalanced(&self, pointer: *mut Node<T, U>) -> bool {
-
-        if self._height((*pointer).left_child, 0) == self._height((*pointer).right_child, 0) - 1 ||
-            self._height((*pointer).left_child, 0) == self._height((*pointer).right_child, 0) ||
-            self._height((*pointer).left_child, 0) == self._height((*pointer).right_child, 0) + 1 
-        {
-            return true
-        }
-
-        false
     }
 
     pub fn get(&self, key: T) -> Option<U> {
@@ -250,7 +169,7 @@ impl<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + Part
             }
 
             if self.isRed((*node_pointer).left_child) && self.isRed((*node_pointer).right_child) {
-                self.flipColours(node_pointer);
+                    self.flipColours(node_pointer);
             }
 
             // Increment counts
@@ -459,7 +378,4 @@ impl<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + Part
         self.0.deleteMin();
         min
     }
-}
-
-fn main() {
 }
