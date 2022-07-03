@@ -1,3 +1,15 @@
+#![allow(non_snake_case)]
+#![allow(non_camel_case_types)]
+
+// p434 rotateLeft(), rotateRight()
+// p436 flipColors()
+// p439 put()
+// p451 Exercises
+
+// 3.3.41
+
+// deleteMin(), deleteMax() and delete() for red-black BST
+
 use std::ptr;
 
 #[derive(PartialEq, Clone, Copy, Debug)]
@@ -105,6 +117,26 @@ impl<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + Part
             } else {
                 (*node_pointer).colour = Colour::Red;
             }
+            
+    
+            // if 
+            //     self.isRed((*node_pointer).left_child) &&
+            //     self.isRed((*node_pointer).right_child) &&
+            //     !self.isRed(node_pointer)
+            // {
+            //         (*node_pointer).colour = Colour::Red;
+            //         (*(*node_pointer).left_child).colour = Colour::Black;
+            //         (*(*node_pointer).right_child).colour = Colour::Black;
+            // } 
+            // else if 
+            //    !self.isRed((*node_pointer).left_child) &&
+            //     !self.isRed((*node_pointer).right_child) &&
+            //     self.isRed(node_pointer)
+            // {
+            //     (*node_pointer).colour = Colour::Black;
+            //     (*(*node_pointer).left_child).colour = Colour::Red;
+            //     (*(*node_pointer).right_child).colour = Colour::Red;
+            // }
         }
     }
 
@@ -618,6 +650,7 @@ impl<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + Part
         self.fixUp(pointer)
     }
 
+
     fn printTree(&self) {
         let mut tree_vec: Vec<(T, usize, Colour)> = Vec::new();
         self._printTree(&mut tree_vec, self.root, 0);
@@ -663,4 +696,47 @@ impl<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + Part
         self.0.deleteMin();
         min
     }
+}
+
+fn main() {
+    let mut bst = RedBlackBST::new();
+    bst.put("E", 0);
+    bst.put("A", 1);
+    bst.put("S", 2);
+    bst.put("Y", 3);
+    bst.put("Q", 4);
+    bst.put("U", 5);
+    bst.put("E", 6);
+    bst.put("S", 7);
+    bst.put("T", 8);
+    bst.put("I", 9);
+    bst.put("O", 10);
+    bst.put("N", 11);
+
+
+    println!("{:?}", bst.all_keys());
+    println!("{:?}", bst.delete("E"));
+    println!("{:?}", bst.all_keys());
+    println!("{:?}", bst.delete("S"));
+    println!("{:?}", bst.all_keys());
+    println!("{:?}", bst.delete("Q"));
+    println!("{:?}", bst.all_keys());
+    println!("{:?}", bst.delete("N"));
+    println!("{:?}", bst.all_keys());
+    println!("{:?}", bst.delete("N"));
+    println!("{:?}", bst.all_keys());
+    println!("{:?}", bst.delete("Z"));
+    println!("{:?}", bst.all_keys());
+    println!("{:?}", bst.deleteMax());
+    println!("{:?}", bst.all_keys());
+    println!("{:?}", bst.deleteMax());
+    println!("{:?}", bst.all_keys());
+    println!("{:?}", bst.delete("I"));
+    println!("{:?}", bst.all_keys());
+    println!("{:?}", bst.delete("O"));
+    println!("{:?}", bst.all_keys());
+    println!("{:?}", bst.delete("A"));
+    println!("{:?}", bst.all_keys());
+    println!("{:?}", bst.delete("T"));
+    println!("{:?}", bst.all_keys());
 }

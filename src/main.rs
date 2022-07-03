@@ -1,470 +1,155 @@
 #![allow(non_snake_case)]
 #![allow(non_camel_case_types)]
 
-// p434 rotateLeft(), rotateRight()
-// p436 flipColors()
-// p439 put()
-// p451 Exercises
+// p480 Exercises
 
-// 3.3.33 
+// 3.4.3
 
-// Certification. 
+// Develop an alternate implementation of SeparateChainingHashST
+// that directly uses the linked-list code from SequentialSearchST.
 
-// Add to RedBlackBST a method is23() to check that no node 
-// is connected to two red links and that there are no right-leaning red links 
-// and a method isBalanced() to check that all paths from the root to a null link 
-// have the same number of black links. 
+mod utils {pub mod LinkedList;}
+use utils::LinkedList::List as LinkedList;
 
-// Combine these methods with code from isBST() in Exercise 3.2.32 to create a method isRedBlackBST() 
-// that checks that the tree is a red-black BST.
-
-use std::ptr;
-
-#[derive(PartialEq, Clone)]
-enum Colour {
-    Red,
-    Black
-}
-
-pub struct Node<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + PartialOrd + PartialEq + Copy> {
+pub struct STNode<T, U> {
     key: T,
-    value: U,
-    subtree_size: usize,
-    left_child: *mut Node<T, U>,
-    right_child: *mut Node<T, U>,
-    colour: Colour
+    value: U
 }
 
-pub struct BinarySearchTree<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + PartialOrd + PartialEq + Copy> {
-    pub root: *mut Node<T, U>,
+pub struct SequentialSearchST<T, U> {
+    size: usize,
+    list: LinkedList<STNode<T, U>>,
 }
 
-pub struct IntoIter<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + PartialOrd + PartialEq + Copy>(BinarySearchTree<T, U>);
+impl<T: Copy + Clone + PartialOrd + PartialEq + std::fmt::Debug, 
+    U: Copy + Clone + PartialOrd + PartialEq + std::fmt::Debug> 
+    SequentialSearchST<T, U> {
 
-impl<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + PartialOrd + PartialEq + Copy> BinarySearchTree<T, U> {
-    pub fn size(&self) -> usize {self._subtree_size(self.root)}
+    pub fn size(&self) -> usize {self.size}
 
-    pub fn is_empty(&self) -> bool {self.size() == 0}
-
-    fn _subtree_size(&self, node_pointer: *mut Node<T, U>) -> usize {
-        if node_pointer.is_null() {return 0}
-
-        unsafe { 
-            (*node_pointer).subtree_size
-        }
-    }
+    pub fn isEmpty(&self) -> bool {self.size == 0}
 
     pub fn new() -> Self {
-        BinarySearchTree { root: ptr::null_mut() }
+        SequentialSearchST {
+            size: 0,
+            list: LinkedList::new()
+        }
     }
 
-    fn isRed(&self, node_pointer: *mut Node<T, U>) -> bool {
-        if node_pointer.is_null() {return false}
-        (*node_pointer).colour == Colour::Red
-    }
+    pub fn get(&self, key: &T) -> Option<U> {
+        if self.isEmpty() {return None}
 
-    fn rotateLeft(&mut self, node_pointer: *mut Node<T, U>) -> *mut Node<T, U> {
-        assert!(!(*node_pointer).right_child.is_null() && self.isRed((*node_pointer).right_child), "cannot rotate left if have no red right child");
+        // Linear search for key
+        let iter = self.list.iter();
 
-        let new_parent = (*node_pointer).right_child;
-        (*node_pointer).right_child = (*new_parent).left_child;
-        (*new_parent).left_child = node_pointer;
-
-        (*new_parent).colour = (*node_pointer).colour;
-        (*node_pointer).colour = Colour::Red;
-
-        (*new_parent).subtree_size = (*node_pointer).subtree_size;
-        (*node_pointer).subtree_size = 1 + self._subtree_size((*node_pointer).left_child) + self._subtree_size((*node_pointer).right_child);
+        for node in iter {
+            // Search hit
+            if &node.key == key {return Some(node.value)}
+        }
         
-        return new_parent
-    }
-
-    fn rotateRight(&mut self, node_pointer: *mut Node<T, U>) -> *mut Node<T, U> {
-        assert!(!(*node_pointer).left_child.is_null() && self.isRed((*node_pointer).left_child), "cannot rotate right if have no red left child");
-
-        let new_parent = (*node_pointer).left_child;
-        (*node_pointer).left_child = (*new_parent).right_child;
-        (*new_parent).right_child = node_pointer;
-
-        (*new_parent).colour = (*node_pointer).colour;
-        (*node_pointer).colour = Colour::Red;
-
-        (*new_parent).subtree_size = (*node_pointer).subtree_size;
-        (*node_pointer).subtree_size = 1 + self._subtree_size((*node_pointer).left_child) + self._subtree_size((*node_pointer).right_child);
-
-        return new_parent
-    }
-
-    fn flipColours(&mut self, node_pointer: *mut Node<T, U>) {
-
-        if (*node_pointer).left_child.is_null() || (*node_pointer).right_child.is_null() || node_pointer.is_null() {
-            return
-        }
-
-        if 
-            self.isRed((*node_pointer).left_child) &&
-            self.isRed((*node_pointer).right_child) &&
-            !self.isRed(node_pointer)
-        {
-                (*node_pointer).colour = Colour::Red;
-                (*(*node_pointer).left_child).colour = Colour::Black;
-                (*(*node_pointer).right_child).colour = Colour::Black;
-        } 
-        else if 
-           !self.isRed((*node_pointer).left_child) &&
-            !self.isRed((*node_pointer).right_child) &&
-            self.isRed(node_pointer)
-        {
-            (*node_pointer).colour = Colour::Black;
-            (*(*node_pointer).left_child).colour = Colour::Red;
-            (*(*node_pointer).right_child).colour = Colour::Red;
-        }
-
-    }
-
-    fn moveRedLeft(&mut self, pointer: *mut Node<T, U>) -> *mut Node<T, U> {
-        self.flipColours(pointer);
-        if self.isRed((*(*pointer).right_child).left_child) {
-            (*pointer).right_child = self.rotateRight((*pointer).right_child);
-            pointer = self.rotateLeft(pointer);
-            self.flipColours(pointer);
-        }
-        return pointer
-    }
-
-    fn moveRedRight(&mut self, pointer: *mut Node<T, U>) -> *mut Node<T, U> {
-        self.flipColours(pointer);
-        if self.isRed((*(*pointer).left_child).left_child) {
-            pointer = self.rotateRight(pointer);
-            self.flipColours(pointer);
-        }
-        return pointer
-    }
-
-    // Check that no node is connected to two red links => Check both children are not red
-    // Check no right-learning red links
-    pub fn is23(self) -> bool {
-        self._is23(self.root)
-    }
-
-    pub fn _is23(self, pointer: *mut Node<T, U>) -> bool {
-        if pointer.is_null() {return true}
-
-        let bothChildrenNotRed = !self.isRed((*pointer).left_child) && !self.isRed((*pointer).right_child);
-        let noRightLeaningRedLink = !self.isRed((*pointer).right_child);
-               
-        bothChildrenNotRed && noRightLeaningRedLink && self._is23((*pointer).left_child) && self._is23((*pointer).right_child) 
-    }
-
-    // Check that all paths from root to null link have same number of black links
-    fn isBalanced(&self) -> bool {
-        // Count black nodes from root to min
-        let mut blackNodes = 0;
-        let mut pointer = self.root;
-
-        while !pointer.is_null() {
-            if !self.isRed(pointer) {blackNodes += 1;}
-            pointer = (*pointer).left_child; 
-        }
-
-        self._isBalanced(self.root, blackNodes)
-    }
-
-    fn _isBalanced(&self, pointer: *mut Node<T, U>, blackNodes: isize) -> bool {
-        if pointer.is_null() {return blackNodes == 0}
-
-        if !self.isRed(pointer) {blackNodes -= 1}
-
-        self._isBalanced((*pointer).left_child, blackNodes) &&  self._isBalanced((*pointer).right_child, blackNodes)
-    }
-
-    pub fn get(&self, key: T) -> Option<U> {
-        if self.is_empty() {return None}
-
-        // Recursive search for key, start from root
-        self._get(self.root, key)
-    }
-
-    // Return value associated with key in the subtree rooted at node_pointer
-    // If key not present, return None
-    fn _get(&self, node_pointer: *mut Node<T, U>, key: T) -> Option<U> {
-        if self.is_empty() {return None}
-
-        // Recursive base case
-        // Also guard against dereferencing null pointer
-        if node_pointer.is_null() {return None}
-
-        unsafe {
-            // If given key < root key, recurse into left child
-            if key < (*node_pointer).key {return self._get((*node_pointer).left_child, key)}
-            // If given key > root key, recurse into right child
-            else if key > (*node_pointer).key {return self._get((*node_pointer).right_child, key)}
-            // Else given key == root key, search hit
-            else {return Some((*node_pointer).value)}
-        }
+        None
     }
 
     pub fn put(&mut self, key: T, value: U) {
-        self.root = self._put(self.root, key, value); // ? Don't understand re-assigning self.root
-        (*self.root).colour = Colour::Black;
-    }
-
-    // If search hit, change corresponding node value
-    // Else, add new node
-    // Recursive call here, keep re-assigning nodes on each level
-    fn _put(&mut self, node_pointer: *mut Node<T, U>, key: T, value: U) -> *mut Node<T, U> {
-        if node_pointer.is_null() {
-            // If recurse into non-existent node, create a node and return it
-            let new_node = Box::into_raw(
-                Box::new
-                    (Node {
-                        key: key, 
-                        value: value, 
-                        subtree_size: 1,
-                        left_child: ptr::null_mut(), 
-                        right_child: ptr::null_mut(),
-                        colour: Colour::Red
-                    })
-            );
-
-            return new_node
-        }
-
-        // Split four-node if create one at the bottom
-        // If parent has a red other child, then flip parent and other child, and return Black Node            
-
-        unsafe {
-            // If given key < root key, recurse into left
-            if key < (*node_pointer).key {
-                (*node_pointer).left_child = self._put((*node_pointer).left_child, key, value)
-            // Else if given key > root key, recurse into right
-            } else if key > (*node_pointer).key {
-                (*node_pointer).right_child = self._put((*node_pointer).right_child, key, value)
-            // Else search hit
-            } else {
-                (*node_pointer).value = value;
-            }
-
-            // Balance on the way up
-            if self.isRed((*node_pointer).right_child) && !self.isRed((*node_pointer).left_child) {
-                node_pointer = self.rotateLeft(node_pointer);
-            }
-
-            if self.isRed((*node_pointer).left_child) && self.isRed((*(*node_pointer).left_child).left_child) {
-                node_pointer = self.rotateRight(node_pointer);
-            }
-
-            if self.isRed((*node_pointer).left_child) && self.isRed((*node_pointer).right_child) {
-                self.flipColours(node_pointer);
-            }
-
-            // Increment counts
-            (*node_pointer).subtree_size = self._subtree_size((*node_pointer).left_child) + self._subtree_size((*node_pointer).right_child) + 1;            
-        }
-
-        // Mmmm, intuitively this feels redundant in most cases
-        return node_pointer
-    }
-
-    pub fn min(&self) -> Option<T> {
-        if self.is_empty() {return None}
-        unsafe {
-            Some( (*self._min(self.root)).key )
-        }
-    }
-
-    fn _min(&self, node_pointer: *mut Node<T, U>) -> *mut Node<T, U> {
-        // Keep recursing down left subchild, until hit null pointer
-        unsafe {
-            if (*node_pointer).left_child.is_null() {return node_pointer}
-            return self._min((*node_pointer).left_child)
-        }
-    }
-
-    pub fn max(&self) -> Option<T> {
-        if self.is_empty() {return None}
-        unsafe {
-            Some( (*self._max(self.root)).key )
-        }
-    }
-
-    fn _max(&self, node_pointer: *mut Node<T, U>) -> *mut Node<T, U> {
-        // Keep recursing down right subchild, until hit null pointer
-        unsafe {
-            if (*node_pointer).right_child.is_null() {return node_pointer}
-            return self._max((*node_pointer).right_child)
-        }
-    }
-
-    pub fn floor(&self, key: T) -> Option<T> {
-        let pointer = self._floor(self.root, key);
-        if pointer.is_null() {return None}
-        unsafe {
-            return Some((*pointer).key)
-        }
-    }
-
-    // Floor is biggest element <= key
-    fn _floor(&self, node_pointer: *mut Node<T, U>, key: T) -> *mut Node<T, U> {
-        if node_pointer.is_null() {return ptr::null_mut()}
-
-        unsafe {
+        for node in self.list.iter_mut() {
             // Search hit
-            if key == (*node_pointer).key {return node_pointer}
-
-            // If key < pointer key, recurse into left child
-            else if key < (*node_pointer).key {return self._floor((*node_pointer).left_child, key)}
-            
-            // Else if key > pointer key, floor could be in right_child
-            let floor_pointer = self._floor((*node_pointer).right_child, key);
-            if !floor_pointer.is_null() {return floor_pointer} // If found floor, return it
-            else {return node_pointer} // Else return current pointer
-        }
-    }
-
-    pub fn ceiling(&self, key: T) -> Option<T> {
-        let pointer = self._ceiling(self.root, key);
-        if pointer.is_null() {return None}
-        unsafe {
-            return Some((*pointer).key)
-        }
-    }
-
-    fn _ceiling(&self, node_pointer: *mut Node<T, U>, key: T) -> *mut Node<T, U> {
-        if node_pointer.is_null() {return ptr::null_mut()}
-
-        unsafe {
-            if key == (*node_pointer).key {return node_pointer}
-            else if key > (*node_pointer).key {return self._ceiling((*node_pointer).right_child, key)}
-            
-            let ceiling_pointer = self._ceiling((*node_pointer).left_child, key);
-            if !ceiling_pointer.is_null() {return ceiling_pointer}
-            else {return node_pointer}
-        }
-    }
-
-    pub fn select(&self, rank: usize) -> Option<T> {
-        if self.is_empty() || rank >= self.size() {return None}
-        unsafe {
-            Some( (*self._select(self.root, rank)).key )
-        }
-    }
-
-    fn _select(&self, node_pointer: *mut Node<T, U>, rank: usize) -> *mut Node<T, U> {
-        if node_pointer.is_null() {return ptr::null_mut()}
-
-        unsafe {
-            let left_subtree_size = self._subtree_size((*node_pointer).left_child);
-            if left_subtree_size > rank {return self._select((*node_pointer).left_child, rank)}
-            else if left_subtree_size < rank {return self._select((*node_pointer).right_child, rank - left_subtree_size - 1)}
-            else {return node_pointer}
-        }
-    }
-
-    pub fn rank(&self, key: T) -> usize {
-        self._rank(key, self.root)
-    }
-
-    fn _rank(&self, key: T, node_pointer: *mut Node<T, U>) -> usize {
-        if node_pointer.is_null() {return 0}
-
-        unsafe {
-            // Return rank in left subchild
-            if key < (*node_pointer).key {return self._rank(key, (*node_pointer).left_child)}
-            // Else left subchild + 1 (for pointer) + rank in right branch
-            else if key > (*node_pointer).key {return 1 + self._subtree_size((*node_pointer).left_child) + self._rank(key, (*node_pointer).right_child)}
-            // If search hit, return # of nodes in left branch
-            else {return self._subtree_size((*node_pointer).left_child)}
-        }
-    }
-
-    pub fn peek_at_root(&self) -> Option<(&T, &U)> {
-        if self.size() == 0 {return None}
-        unsafe {
-            self.root.as_ref().map(|node| (&node.key, &node.value))
-        }
-    }
-
-    pub fn peek_mut_at_root(&mut self) -> Option<(&mut T, &mut U)> {
-        if self.size() == 0 {return None}
-        unsafe {
-            self.root.as_mut().map(|node| (&mut node.key, &mut node.value))
-        }
-    }
-
-    pub fn into_iter(self) -> IntoIter<T, U> {
-        IntoIter(self)
-    }
-
-    pub fn height(&self) -> usize {
-        // Start from root
-        // Can either go down left subchild or right subchild, go down subchild with most children
-        // With each recursion, add height by 1
-        self._height(self.root, 0)
-    }
-
-    pub fn _height(&self, pointer: *mut Node<T, U>, accum_height: usize) -> usize {
-        if pointer.is_null() {return accum_height}
-
-        unsafe {
-            if (*pointer).left_child.is_null() {return self._height((*pointer).right_child, accum_height + 1)}
-            else if (*pointer).right_child.is_null() {return self._height((*pointer).left_child, accum_height + 1)}
-            // Both left and right child are present, choose child with bigger # of subchildren
-            else {
-                if (*(*pointer).left_child).subtree_size > (*(*pointer).right_child).subtree_size {
-                    return self._height((*pointer).left_child, accum_height + 1)
-                } else {
-                    return self._height((*pointer).right_child, accum_height + 1)
-                }
+            if node.key == key {
+                node.value = value;
+                return
             }
         }
+
+        // Else search miss, insert at end of linked list
+        let new_node = STNode{
+            key: key,
+            value: value
+        };
+
+        self.list.insert_at_head(new_node);
+        self.size += 1;
     }
 
-    pub fn all_keys(&self) -> Vec<T> {
-        assert!(!self.is_empty(), "empty tree has no range");
-        self.keys(self.min().unwrap(), self.max().unwrap())
-    }
-
-    pub fn keys(&self, low_key: T, high_key: T) -> Vec<T> {
-        let mut key_vec: Vec<T> = Vec::new();
-        self._keys(self.root, &mut key_vec, low_key, high_key);
-        key_vec
-    }
-
-    fn _keys(&self, pointer: *mut Node<T, U>, key_vec: &mut Vec<T>, low_key: T, high_key: T) {
-        if pointer.is_null() {return}
-
-        unsafe {
-            if low_key < (*pointer).key {
-                self._keys((*pointer).left_child, key_vec, low_key, high_key)
-            } 
-            
-            if low_key <= (*pointer).key && high_key >= (*pointer).key {
-                key_vec.push((*pointer).key);
-            } 
-            
-            if high_key > (*pointer).key {
-                self._keys((*pointer).right_child, key_vec, low_key, high_key)
-            }
+    pub fn contains(&self, key: &T) -> bool {
+        match self.get(key) {
+            Some(_) => true,
+            None => false
         }
     }
 
+    pub fn keys(&self) -> Vec<T> {
+        let mut vec = Vec::new();
+        let iter = self.list.iter();
+        for node in iter {vec.push(node.key);}
+        vec
+    }
+
+    // pub fn delete(&mut self, key: T) -> Option<T> {
+    //     let rank = self.rank(key);
+
+    //     // If match current key, change the value
+    //     if rank < self.size && self.list.peek_at_index(rank).unwrap().key == key {
+    //         let node = self.list.remove_at_index(rank);
+    //         self.size -= 1;
+    //         return Some(node.unwrap().key)
+    //     }
+
+    //     None
+    // }
 }
 
-impl<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + PartialOrd + PartialEq + Copy> Drop for BinarySearchTree<T, U> {
-    fn drop(&mut self) {
-        while !self.is_empty() {self.deleteMin()}
-    }
-}
-
-impl<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + PartialOrd + PartialEq + Copy> Iterator for IntoIter<T, U> {
-    type Item = T;
-    fn next(&mut self) -> Option<Self::Item> {
-        let min = self.0.min();
-        self.0.deleteMin();
-        min
-    }
-}
 
 fn main() {
+    let vec = vec![
+        "E",
+        "A",
+        "S",
+        "Y",
+        "Q",
+        "U",
+        "E",
+        "S",
+        "T",
+        "I",
+        "O",
+        "N",
+    ];
+
+    for letter in vec {
+        println!("{:?}", hash_letter(letter));
+    }
+
+}
+
+fn letter_to_number(letter: &str) -> usize {
+    if letter == "A" {return 1}
+    else if letter == "B" {return 2}
+    else if letter == "C" {return 3}
+    else if letter == "D" {return 4}
+    else if letter == "E" {return 5}
+    else if letter == "F" {return 6}
+    else if letter == "G" {return 7}
+    else if letter == "H" {return 8}
+    else if letter == "I" {return 9}
+    else if letter == "J" {return 10}
+    else if letter == "K" {return 11}
+    else if letter == "L" {return 12}
+    else if letter == "M" {return 13}
+    else if letter == "N" {return 14}
+    else if letter == "O" {return 15}
+    else if letter == "P" {return 16}
+    else if letter == "Q" {return 17}
+    else if letter == "R" {return 18}
+    else if letter == "S" {return 19}
+    else if letter == "T" {return 20}
+    else if letter == "U" {return 21}
+    else if letter == "V" {return 22}
+    else if letter == "X" {return 23}
+    else if letter == "W" {return 24}
+    else if letter == "Y" {return 25}
+    else if letter == "Z" {return 26}
+    0
+}
+
+fn hash_letter(letter: &str) -> usize {
+    ( 11 * letter_to_number(letter) ) % 5
 }
