@@ -3,12 +3,11 @@
 
 // p480 Exercises
 
-// 3.4.10
+// 3.4.11
 
-// Insert the keys E A S Y Q U E S T I O N in that order to an initially
-// empty table of M = 16 using linear probing.
-// Use the hash function 11 k % M to transform the kth letter of the alphabet 
-// into a table index. Redo this exercise for M = 10.
+// Give contents of linear-probing hash table when insert E A S Y Q U E S T I O N
+// into an initially empty table of initial size M = 4, expanded by doubling whenever half full
+// Use hash function 11 k % m
 
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
@@ -199,7 +198,7 @@ impl<U: Copy + Clone + PartialOrd + PartialEq + std::fmt::Debug>
 
 
 fn main() {
-    let mut st = LinearProbingHashST::new(16);
+    let mut st = LinearProbingHashST::new(4);
 
     let vec = vec![
         "E",
@@ -220,52 +219,6 @@ fn main() {
         st.put(letter.clone(), i.clone());
     }
 
-    println!("{:?}", st.get("E"));
-    println!("{:?}", st.get("A"));
-    println!("{:?}", st.get("S"));
-    println!("{:?}", st.get("Y"));
-    println!("{:?}", st.get("Q"));
-    println!("{:?}", st.get("U"));
-    println!("{:?}", st.get("E"));
-    println!("{:?}", st.get("S"));
-    println!("{:?}", st.get("T"));
-    println!("{:?}", st.get("I"));
-    println!("{:?}", st.get("O"));
-    println!("{:?}", st.get("N"));
-
-    // println!("{:?}", st.keys);
-    // println!("{:?}", st.values);
-
-    // println!("{:?}", st.get("E"));
-
-
-    st.delete("E");
-    st.delete("A");
-    st.delete("S");
-    println!("------");
-    // println!("{:?}", st.keys);
-    // println!("{:?}", st.values);
-
-    println!("{:?}", st.get("E"));
-    println!("{:?}", st.get("A"));
-    println!("{:?}", st.get("S"));
-    println!("{:?}", st.get("Y"));
-    println!("{:?}", st.get("Q"));
-    println!("{:?}", st.get("U"));
-    println!("{:?}", st.get("E"));
-    println!("{:?}", st.get("S"));
-    println!("{:?}", st.get("T"));
-    println!("{:?}", st.get("I"));
-    println!("{:?}", st.get("O"));
-    println!("{:?}", st.get("N"));
-
-    // println!("{:?}", st.num_of_keys());
-    // // st.deleteKeysAboveInsertionIndex(5);
-    // st.delete("A");
-    // st.delete("E");
-    // println!("{:?}", st.num_of_keys());
-
-    // for i in 0..10 {
-    //     println!("{:?}", st.chain_vec[i].keys());
-    // }
+    println!("{:?}", st.keys);
+    println!("{:?}", st.values);
 }
