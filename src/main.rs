@@ -9,6 +9,47 @@
 // into an initially empty table of initial size M = 4, expanded by doubling whenever half full
 // Use hash function 11 k % m
 
+/*
+
+keys = [
+    null,
+    null,
+    null,
+    "I"
+    null,
+    "O",
+    null,
+    "U", 
+    null, 
+    null, 
+    null, 
+    "A", 
+    null, 
+    null, 
+    null, 
+    null, 
+    null,
+    "S", 
+    null, 
+    "Y", 
+    null, 
+    null, 
+    null, 
+    "E", 
+    null, 
+    null, 
+    "N", 
+    "Q", 
+    "T", 
+    null, 
+    null, 
+    null
+]
+
+*/
+
+
+
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 
