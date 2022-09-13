@@ -3,311 +3,177 @@
 
 // p483 Exercises
 
-// 3.4.30
+// 3.4.31
 
-// Add a method to SeparateChainingST to compute the chi^2 statistic for the hash table. With N keys and table size M, this number is defined by the equation
+// Cuckoo hashing. Develop a symbol-table implementation that maintains two hash tables and two hash functions. Any given key is in one of the tables, but not both. When inserting a new key, hash to one of the tables; if the table position is occupied, replace that key with the new key and hash the old key into the other table (again kick- ing out a key that might reside there). If this process cycles, restart. Keep the tables less than half full. This method uses a constant number of equality tests in the worst case for search (trivial) and amortized constant time for insert.
 
-mod utils {pub mod LinkedList;}
-use utils::LinkedList::List as LinkedList;
+// Two hash tables => two hash functions
+// Insert => attempt to hash to first table, if occupied hash into other table => If both occupied, repeat
+// If cycle, restart
+
+// INSERT
+// Insert into table 1
+// If table 1 empty, return
+// If table 1 already occupied, take old table 1 element and insert into table 2
+// If table 2 empty, return
+// If table 2 already occupied, take old table 2 element and recurse back into insertion function
+// Permit recursion depth of 5, if > 5 we just double the size of both tables, rehash and then insert.
+
+// DELETE
+// Delete found element
+
+// RESIZING
+// Default = 997, prime number
+// Maintain num_of_chains > 2 * num_of_keys, or lambda > 0.5
+// If a put operation will cause lambda > 0.5, resize to double the size
+// If a delete operation will cause lambda < 0.1, resize to half
+
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 
+#[derive(Copy, Clone, Debug)]
 pub struct STNode<T, U> {
     key: T,
     value: U,
-    entries_at_insertion: usize
 }
 
-// SequentialSearchST is the linked list data structure representing each 'chain'
-pub struct SequentialSearchST<T, U> {
-    size: usize,
-    list: LinkedList<STNode<T, U>>,
-}
+pub struct CuckooHashingST<T, U> {
+    total_num_of_keys: usize,
 
-impl<T: Copy + Clone + PartialOrd + PartialEq + std::fmt::Debug + Hash, 
-    U: Copy + Clone + PartialOrd + PartialEq + std::fmt::Debug> 
-    SequentialSearchST<T, U> {
+    table_one: Vec<Option<STNode<T, U>>>, // Table 1
+    table_one_keys_count: usize,
 
-    pub fn size(&self) -> usize {self.size}
-
-    pub fn isEmpty(&self) -> bool {self.size == 0}
-
-    pub fn new() -> Self {
-        SequentialSearchST {
-            size: 0,
-            list: LinkedList::new()
-        }
-    }
-
-    pub fn get(&self, key: &T) -> Option<U> {
-        if self.isEmpty() {return None}
-
-        // Linear search for key
-        let iter = self.list.iter();
-
-        for node in iter {
-            // Search hit
-            if &node.key == key {return Some(node.value)}
-        }
-        
-        None
-    }
-
-    pub fn getEntriesAtInsertion(&self, key: &T) -> Option<usize> {
-        if self.isEmpty() {return None}
-
-        // Linear search for key
-        let iter = self.list.iter();
-
-        for node in iter {
-            // Search hit
-            if &node.key == key {return Some(node.entries_at_insertion)}
-        }
-        
-        None
-    }
-
-    pub fn findIndex(&self, key: &T) -> Option<usize> {
-        if self.isEmpty() {return None}
-
-        // Linear search for key
-        let iter = self.list.iter();
-
-        for (i, node) in iter.enumerate() {
-            // Search hit
-            if &node.key == key {return Some(i)}
-        }
-        
-        None
-    }
-
-    pub fn put(&mut self, key: T, value: U, _entries_at_insertion: usize) {
-        for node in self.list.iter_mut() {
-            // Search hit
-            if node.key == key {
-                node.value = value;
-                return
-            }
-        }
-
-        // Else search miss, insert at end of linked list
-        let new_node = STNode{
-            key: key,
-            value: value,
-            entries_at_insertion: _entries_at_insertion
-        };
-
-        self.list.insert_at_head(new_node);
-        self.size += 1;
-    }
-
-    pub fn contains(&self, key: &T) -> bool {
-        match self.get(key) {
-            Some(_) => true,
-            None => false
-        }
-    }
-
-    pub fn keys(&self) -> Vec<T> {
-        let mut vec = Vec::new();
-        let iter = self.list.iter();
-        for node in iter {vec.push(node.key);}
-        vec
-    }
-
-    pub fn delete(&mut self, key: T) {
-        let index = self.findIndex(&key);
-
-        match index {
-            None => {return},
-            Some(index) => {
-                self.list.remove_at_index(index);
-                self.size -= 1;
-                return
-            }
-        }
-    }
-}
-
-pub struct SeparateChainingHashST<T, U> {
-    num_of_keys: usize,
-    num_of_chains: usize,
-    chain_vec: Vec<SequentialSearchST<T, U>>
+    table_two: Vec<Option<STNode<T, U>>>, // Table 2
+    table_two_keys_count: usize,
 }
 
 impl<T: Copy + Clone + PartialOrd + PartialEq + std::fmt::Debug + Hash, 
     U: Copy + Clone + PartialOrd + PartialEq + std::fmt::Debug> 
-    SeparateChainingHashST<T, U> {
-        pub fn num_of_keys(&self) -> usize {self.num_of_keys}
-        pub fn num_of_chains(&self) -> usize {self.num_of_chains}
-        pub fn isEmpty(&self) -> bool {self.num_of_keys == 0}
+    CuckooHashingST<T, U> {
+        pub fn num_of_keys(&self) -> usize {self.total_num_of_keys}
+        pub fn isEmpty(&self) -> bool {self.total_num_of_keys == 0}
 
-        pub fn new(_num_of_chains: Option<usize>) -> Self {
-            let mut chain_vec: Vec<SequentialSearchST<T, U>> = Vec::new();
-            let unwrapped_num_of_chains;
+        pub fn new(_table_size: Option<usize>) -> Self {
+            let mut table_one: Vec<Option<STNode<T, U>>> = Vec::new();
+            let mut table_two: Vec<Option<STNode<T, U>>> = Vec::new();
+            let table_size;
 
             // Default to 997
-            match _num_of_chains {
-                None => {unwrapped_num_of_chains = 997;},
-                Some(i) => {unwrapped_num_of_chains = i;}
+            match _table_size {
+                None => {table_size = 997;},
+                Some(i) => {table_size = i;}
             }
 
-            for _ in 0..unwrapped_num_of_chains { chain_vec.push(SequentialSearchST::new()) }
+            for _ in 0..table_size { 
+                table_one.push(None);
+                table_two.push(None);
+            }
 
-            SeparateChainingHashST {
-                num_of_keys: 0,
-                num_of_chains: unwrapped_num_of_chains,
-                chain_vec: chain_vec
+            CuckooHashingST {
+                total_num_of_keys: 0,
+                table_one: table_one,
+                table_one_keys_count: 0,
+                table_two: table_two,
+                table_two_keys_count: 0,
             }
         }
 
-        // Expect to disperse key uniformly among all possible 64-bit result values
-        fn _hash(&self, t: &T) -> usize {
+        fn _hash_one(&self, t: &T) -> usize {
             let mut hasher = DefaultHasher::new();
             t.hash(&mut hasher);
-            (11 + hasher.finish() as usize) % self.num_of_chains
+            hasher.finish() as usize % self.table_one.len()
         }
 
         fn _hash_two(&self, t: &T) -> usize {
             let mut hasher = DefaultHasher::new();
             t.hash(&mut hasher);
-            (17 + hasher.finish() as usize) % self.num_of_chains
+            hasher.finish() as usize % self.table_two.len()
         }
 
-        pub fn put(&mut self, key: T, value: U) {
+        fn _resize_table_one(&mut self, new_size: usize) {
+            // Collect all entries in the table
+            let mut entries: Vec<STNode<T, U>> = Vec::new();
 
-            let hash_one = self._hash(&key);
-            let hash_two = self._hash_two(&key);
-
-            // If doesn't contain key, insert
-            if !self.contains(&key) {
-                self.num_of_keys += 1;
-
-                if self.chain_vec[hash_one].size <= self.chain_vec[hash_two].size {
-                    // List 1 <= List 2, put in List 1
-                    self.chain_vec[hash_one].put(key, value, self.num_of_keys);
-                } else {
-                    // List 2 < List 1, put in List 2
-                    self.chain_vec[hash_two].put(key, value, self.num_of_keys);
-                }
-            // Else contains key, find and replace key
-            } else {
-                if self.chain_vec[hash_one].contains(&key) {
-                    self.chain_vec[hash_one].put(key, value, self.num_of_keys);
-                } else {
-                    self.chain_vec[hash_two].put(key, value, self.num_of_keys);
+            for entry in self.table_one.iter() {
+                if let Some(node) = entry {
+                    entries.push(STNode{key: node.key, value: node.value});
                 }
             }
-            
-            // Probably inefficient to use self.get() method instead of using a return value from
-            // SequentialSearchST.put(), but oh well
-            // match self.get(&key) {
-            //     None => {self.num_of_keys += 1;}
-            //     Some(_) => {}
-            // }
 
-            // let num_of_keys = self.num_of_keys();
-            // let hash_one = self._hash(&key);
-            // let hash_two = self._hash_two(&key);
+            // Create new table
+            let mut table_one: Vec<Option<STNode<T, U>>> = Vec::new();
+            for _ in 0..new_size {table_one.push(None)}
+            self.table_one = table_one;
 
-            // if hash_one < hash_two {
-            //     self.chain_vec[hash_one].put(key, value, num_of_keys);
-            // } else {
-            //     self.chain_vec[hash_two].put(key, value, num_of_keys);
-            // }
-
-        }
-
-        pub fn get(&self, key: &T) -> Option<U> {
-
-            // let hash_of_key = self._hash(&key);
-            // self.chain_vec[hash_of_key].get(&key)
-
-            let hash_one = self._hash(key);
-            let hash_two = self._hash_two(key);
-
-            if self.chain_vec[hash_one].size <= self.chain_vec[hash_two].size {
-                // List 1 <= List 2, search in List 1
-                match self.chain_vec[hash_one].get(key) {
-                    Some(value) => {return Some(value)},
-                    None => {
-                        // Search miss in list 1, search in list 2
-                        return self.chain_vec[hash_two].get(key)
-                    }
-                }
-            } else {
-                // List 2 < List 1, search in List 2
-                match self.chain_vec[hash_two].get(key) {
-                    Some(value) => {return Some(value)},
-                    None => {
-                        // Search miss in list 2, search in list 1
-                        return self.chain_vec[hash_one].get(key)
-                    } 
+            // Rehash collected entries into new table
+            for entry in entries {
+                let hash = self._hash_one(&entry.key);
+                match self.table_one[hash] {
+                    None => {self.table_one[hash] = Some(entry);},
+                    Some(_) => panic!("_resize_table_one - should not have preexisting entry")
                 }
             }
         }
 
-        pub fn delete(&mut self, key: T) {
-            match self.get(&key) {
-                None => {return}
-                Some(_) => {
-                    self.num_of_keys -= 1;
-                    let hash_one = self._hash(&key);
-                    let hash_two = self._hash_two(&key);
+        fn _resize_table_two(&mut self, new_size: usize) {
+            // Collect all entries in the table
+            let mut entries: Vec<STNode<T, U>> = Vec::new();
 
-                    if self.chain_vec[hash_one].contains(&key) {
-                        self.chain_vec[hash_one].delete(key)
-                    } else {
-                        self.chain_vec[hash_two].delete(key)
-                    }
+            for entry in self.table_two.iter() {
+                if let Some(node) = entry {
+                    entries.push(STNode{key: node.key, value: node.value});
                 }
             }
 
-            // let hash_of_key = self._hash(&key);
-            // self.chain_vec[hash_of_key].delete(key)
-        }
+            // Create new table
+            let mut table_two: Vec<Option<STNode<T, U>>> = Vec::new();
+            for _ in 0..new_size {table_two.push(None)}
+            self.table_two = table_two;
 
-        pub fn deleteKeysAboveInsertionIndex(&mut self, index_threshold: usize) {
-            // O(N) algorithm to iterate through each entry
 
-            // Iterate through each chain
-            for i in 0..self.num_of_chains {
-                let mut keys_to_be_deleted: Vec<T> = Vec::new();
-
-                for node in self.chain_vec[i].list.iter() {
-                    if node.entries_at_insertion > index_threshold {
-                        keys_to_be_deleted.push(node.key);
-                    }
-                }
-
-                // Delete in descending order (otherwise index unstable if deleted in ascending order)
-                while !keys_to_be_deleted.is_empty() {
-                    self.chain_vec[i].delete(keys_to_be_deleted.pop().unwrap());
-                    self.num_of_keys -= 1;
+            // Rehash collected entries into new table
+            for entry in entries {
+                let hash = self._hash_two(&entry.key);
+                match self.table_two[hash] {
+                    None => {self.table_two[hash] = Some(entry);},
+                    Some(_) => {panic!("_resize_table_two - should not have preexisting entry")}
                 }
             }
         }
 
-        pub fn keys(&self) -> Vec<T> {
-            let mut keys: Vec<T> = Vec::new();
+        pub fn keys(&self) -> Vec<&T> {
+            let mut keys: Vec<&T> = Vec::new();
 
-            for chain in &self.chain_vec {
-                keys.extend_from_slice(&chain.keys())
+            for entry in self.table_one.iter() {
+                if let Some(node) = entry {
+                    keys.push(&node.key);
+                }
+            }
+
+            for entry in &self.table_two {
+                if let Some(node) = entry {
+                    keys.push(&node.key);
+                }
             }
             
             keys
         }
 
-        pub fn resize(&mut self, new_size: usize) {
-            let mut st = SeparateChainingHashST::new(Some(new_size));
+        pub fn get(&self, key: &T) -> Option<U> {
+            let hash_one = self._hash_one(key);
+            let hash_two = self._hash_two(key);
 
-            for key in self.keys() {
-                st.put(key, st.get(&key).unwrap());
+            // Attempt search in table 1, early return if search hit
+            if let Some(node) = self.table_one[hash_one] {
+                if &node.key == key {return Some(node.value)}
             }
 
-            self.chain_vec = st.chain_vec;
-            self.num_of_keys = st.num_of_keys;
-            self.num_of_chains = st.num_of_chains;
+            // Attempt search in table 2, return if search hit
+            if let Some(node) = self.table_two[hash_two] {
+                if &node.key == key {return Some(node.value)}
+            } 
+
+            return None;
         }
 
         pub fn contains(&self, key: &T) -> bool {
@@ -317,19 +183,102 @@ impl<T: Copy + Clone + PartialOrd + PartialEq + std::fmt::Debug + Hash,
             }
         }
 
-        pub fn chi_squared(&self) -> f32 {
-            let mut accumulator: f32 = 0.0;
-            
-            for i in 0..self.num_of_chains {
-                accumulator += (self.chain_vec[i].size as f32 - (self.num_of_keys as f32 / self.num_of_chains as f32)).powf(2.0);
+        pub fn put(&mut self, key: T, value: U) {
+            self._put(key, value, 0)
+        }
+
+        fn _put(&mut self, key: T, value: U, recursion_depth: usize) {
+            // If cuckoo hashing cycle more than 5 times, just rehash
+            if recursion_depth > 5 {
+                self._resize_table_one(self.table_one.len() * 2);
+                self._resize_table_two(self.table_two.len() * 2);
+                self.put(key, value);
+                return
             }
-            
-            accumulator * self.num_of_chains as f32 / self.num_of_keys as f32
+
+            let hash_one_new_key = self._hash_one(&key);
+            let hash_two_new_key = self._hash_two(&key);
+            let new_node = Some(STNode{key: key, value: value});
+
+            // CHECK IF KEY PRE-EXISTING, IF TRUE REPLACE
+
+            // Attempt search in table 1, replace key and return if search hit
+            if let Some(node) = &self.table_one[hash_one_new_key] {
+                if node.key == key {
+                    self.table_one[hash_one_new_key] = new_node;
+                    return;
+                }
+            }
+
+            // Attempt search in table 2, replace key and return if search hit
+            if let Some(node) = &self.table_two[hash_two_new_key] {
+                if node.key == key {
+                    self.table_two[hash_two_new_key] = new_node;
+                    return;
+                }
+            }
+
+            // KEY NOT PRE-EXISTING, INSERT
+            self.total_num_of_keys += 1;
+
+            // If table 1 empty, if insert and return
+            if let None = self.table_one[hash_one_new_key] {
+                self.table_one[hash_one_new_key] = new_node;
+                self.table_one_keys_count += 1;
+                if self.table_one.len() < 2 & self.table_one_keys_count {self._resize_table_one(2 * self.table_one.len())}
+                return;
+            // Else table 1 has pre-existing element, 'replace' table 1 element and insert old table 1 element into table 2
+            } else {
+                let old_key = self.table_one[hash_one_new_key].as_mut().unwrap().key;
+                let old_value = self.table_one[hash_one_new_key].as_mut().unwrap().value;
+                let old_node = Some(STNode{key: old_key, value: old_value});
+                self.table_one[hash_one_new_key] = new_node; // Replace table 1 element
+                
+                let hash_two_old_key = self._hash_two(&old_key);
+                // If table 2 empty, insert and return
+                if let None = self.table_two[hash_two_old_key] {
+                    self.table_two[hash_two_old_key] = old_node;
+                    self.table_two_keys_count += 1;
+                    if self.table_two.len() < 2 & self.table_two_keys_count {self._resize_table_two(2 * self.table_two.len())}
+                    return;
+                // Else table 2 has pre-existing element, replace and make recursive call 
+                } else {
+                    let old_key_2 = self.table_two[hash_two_old_key].as_mut().unwrap().key;
+                    let old_value_2 = self.table_two[hash_two_old_key].as_mut().unwrap().value;
+                    self.table_two[hash_two_old_key] = old_node; // Replace table 2 element
+                    self._put(old_key_2, old_value_2, recursion_depth + 1);
+                }
+            }
+        }
+
+        pub fn delete(&mut self, key: T) {
+            let hash_one = self._hash_one(&key);
+            let hash_two = self._hash_two(&key);
+
+            // Attempt search in table 1, early return if search hit
+            if let Some(node) = self.table_one[hash_one] {
+                if node.key == key {
+                    self.table_one[hash_one] = None;
+                    self.total_num_of_keys -= 1;
+                    self.table_one_keys_count -= 1;
+                    return
+                }
+            }
+
+            // Attempt search in table 2, return if search hit
+            if let Some(node) = self.table_two[hash_two] {
+                if node.key == key {
+                    self.table_two[hash_two] = None;
+                    self.total_num_of_keys -= 1;
+                    self.table_two_keys_count -= 1;
+                    return
+                }
+            }
         }
 }
 
 fn main() {
-    let mut st = SeparateChainingHashST::new(Some(10));
+    let mut st = CuckooHashingST::new(Some(5));
 
     let vec = vec![
         "E",
@@ -346,18 +295,16 @@ fn main() {
         "N",
     ];
 
-    for (i, letter) in vec.iter().enumerate() {
-        st.put(letter.clone(), i.clone());
+    // for (i, letter) in vec.iter().enumerate() {
+    //     st.put(letter.clone(), i.clone());
+    // }
+
+    for i in 0..1000 {
+        st.put(i, i);
     }
 
+    println!("{:?}", st.keys().len());
     println!("{:?}", st.keys());
-    println!("{:?}", st.chi_squared());
-    st.deleteKeysAboveInsertionIndex(5);
-    // st.delete("A");
-    // st.delete("E");
-    // st.delete("O");
-    // st.delete("I");
-    // st.delete("N");
-    println!("{:?}", st.keys());
-    println!("{:?}", st.chi_squared());
+    println!("{:?}", st.table_one.len());
+    println!("{:?}", st.table_two.len());
 }
