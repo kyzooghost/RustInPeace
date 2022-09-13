@@ -547,7 +547,7 @@ impl<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + Part
         }
     }
 
-    fn delete(&mut self, key: T) {
+    pub fn delete(&mut self, key: T) {
         if self.root.is_null() {return}
         unsafe {
             self.root = self._delete(self.root, key);
