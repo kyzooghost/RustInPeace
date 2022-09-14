@@ -1,3 +1,5 @@
+// Implementation guided heavily by https://sedgewick.io/wp-content/themes/sedgewick/papers/2008LLRB.pdf
+
 use std::ptr;
 
 #[derive(PartialEq, Clone, Copy, Debug)]

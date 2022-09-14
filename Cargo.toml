@@ -5,5 +5,6 @@ authors = ["runner"]
 edition = "2021"
 
 [dependencies]
-rand = "0.8.5"
+# rand = "0.8.5"
 # chrono = "0.4.19"
+csv = "1.1"
