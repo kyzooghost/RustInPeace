@@ -1,8 +1,8 @@
 #![allow(non_snake_case)]
 #![allow(non_camel_case_types)]
 
-// 3.5.14
-// Develop and test a static method invert() that takes as argument an ST<String Bag<String>> and produces as return value the inverse of the given symbol table (a symbol table of the same type).
+// 3.5.13
+// Modify LookupCSV to make a program RangeLookupCSV that takes two key values from the standard input and prints all key-value pairs in the .csv file such that the key falls within the range specified.
 
 use std::error::Error;
 use std::fs::File;
