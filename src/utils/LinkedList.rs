@@ -6,13 +6,13 @@ struct Node<T> {
     last: *mut Node<T>
 }
 
-pub struct List<T> {
+pub struct LinkedList<T> {
     head: *mut Node<T>,
     tail: *mut Node<T>,
     size: usize
 }
 
-pub struct IntoIter<T>(List<T>);
+pub struct IntoIter<T>(LinkedList<T>);
 
 pub struct Iter<'a, T> {
     next: Option<&'a Node<T>>,
@@ -22,13 +22,13 @@ pub struct IterMut<'a, T> {
     next: Option<&'a mut Node<T>>,
 }
 
-impl<T> List<T> {
+impl<T> LinkedList<T> {
     pub fn size(&self) -> usize {
         self.size
     }
 
     pub fn new() -> Self {
-        List { head: ptr::null_mut(), tail: ptr::null_mut(), size: 0 }
+        LinkedList { head: ptr::null_mut(), tail: ptr::null_mut(), size: 0 }
     }
 
     pub fn insert_at_head(&mut self, elem: T) {
@@ -276,7 +276,7 @@ impl<T> List<T> {
     }
 }
 
-impl<T> Drop for List<T> {
+impl<T> Drop for LinkedList<T> {
     fn drop(&mut self) {
         while let Some(_) = self.remove_from_tail() { }
     }
