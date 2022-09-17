@@ -259,10 +259,7 @@ impl<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + Part
             }
 
             // Balance on the way up
-            node_pointer = self.fixUp(node_pointer);
-
-            // Increment counts
-            (*node_pointer).subtree_size = self._subtree_size((*node_pointer).left_child) + self._subtree_size((*node_pointer).right_child) + 1;            
+            node_pointer = self.fixUp(node_pointer);        
         }
 
         // Mmmm, intuitively this feels redundant in most cases
@@ -469,11 +466,14 @@ impl<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + Part
                 self.flipColours(pointer);
             }
 
+            // Fix up subtree_size value on the way up
+            (*pointer).subtree_size = self._subtree_size((*pointer).left_child) + self._subtree_size((*pointer).right_child) + 1;  
+
             pointer
         }
     }
 
-    fn deleteMin(&mut self) {
+    pub fn deleteMin(&mut self) {
         if self.root.is_null() {return}
         unsafe {
             self.root = self._deleteMin(self.root);
@@ -508,7 +508,7 @@ impl<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + Part
         }
     }
 
-    fn deleteMax(&mut self) {
+    pub fn deleteMax(&mut self) {
         if self.root.is_null() {return}
         unsafe {
             self.root = self._deleteMax(self.root);
@@ -620,8 +620,8 @@ impl<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + Part
         self.fixUp(pointer)
     }
 
-    fn printTree(&self) {
-        let mut tree_vec: Vec<(T, usize, Colour)> = Vec::new();
+    pub fn printTree(&self) {
+        let mut tree_vec: Vec<(T, usize, Colour, usize)> = Vec::new();
         self._printTree(&mut tree_vec, self.root, 0);
 
         let mut max_level = 0;
@@ -639,10 +639,10 @@ impl<T: Clone + PartialOrd + PartialEq + Copy + std::fmt::Debug, U: Clone + Part
         }
     }
 
-    fn _printTree(&self, vec: &mut Vec<(T, usize, Colour)>, pointer: *mut Node<T, U>, level: usize) {
+    fn _printTree(&self, vec: &mut Vec<(T, usize, Colour, usize)>, pointer: *mut Node<T, U>, level: usize) {
         if pointer.is_null() {return}
         unsafe {
-            vec.push(((*pointer).key, level, (*pointer).colour));
+            vec.push(((*pointer).key, level, (*pointer).colour, (*pointer).subtree_size));
             self._printTree(vec, (*pointer).left_child, level + 1);
             self._printTree(vec, (*pointer).right_child, level + 1);
         }
