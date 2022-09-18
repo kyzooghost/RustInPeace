@@ -1,8 +1,5 @@
 package java_utils;
 
-/**
- * Created by Rene Argento on 12/09/17.
- */
 @SuppressWarnings("unchecked")
 public class Graph implements GraphInterface {
 
