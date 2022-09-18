@@ -142,5 +142,3 @@ public class _4_1_8 {
         System.out.println("count: " + search.count());
     }
 }
-
-
