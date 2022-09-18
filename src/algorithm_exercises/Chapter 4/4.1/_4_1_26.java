@@ -26,7 +26,6 @@ public class _4_1_26 {
             Iterable<Integer> path = paths.pathTo(index);
             for (int i : path) {
                 System.out.println(symbolGraph.name(i));
-
             }
 
         }
