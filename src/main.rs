@@ -1,14 +1,7 @@
 #![allow(non_snake_case)]
 #![allow(non_camel_case_types)]
 
-// p522
-
-// 3.5.29 - Symbol table with random access
-
-// Symbol table with random access. Create a data type that supports inserting a key-value pair, searching for a key and returning the associated value, and deleting and returning a random key. Hint : Combine a symbol table and a randomized queue.
-
-// Randomized queue/stack, same as queue/stack, except pop/dequeue is done on random element.
-// Use random function returning random integer between 0 and self.size(), remove element corresponding to randomly selected index.
+// p558 - dive deeper
 
 use std::hash::{Hash};
 mod utils {pub mod LinearProbingHashTable; pub mod RedBlackBST;}
