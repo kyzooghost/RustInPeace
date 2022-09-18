@@ -13,3 +13,6 @@ To run _4_1_3.java:
 ```bash
 java _4_1_3.java
 ```
+
+https://introcs.cs.princeton.edu/java/stdlib/
+https://algs4.cs.princeton.edu/41graph/
