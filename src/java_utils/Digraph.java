@@ -1,6 +1,6 @@
 package java_utils;
 
-public class Digraph {
+public class Digraph implements GraphInterface {
     private final int vertices;
     protected int edges;
     protected Bag<Integer>[] adjacent;
