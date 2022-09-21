@@ -15,10 +15,8 @@ import java_utils.Digraph;
 import java_utils.Queue;
 import java_utils.Stack;
 import java_utils.DirectedCycle;
-import java_utils.GraphInterface;
 import java_utils.BreadthFirstPaths;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 @SuppressWarnings("unchecked")
 public class _4_2_22 {
