@@ -2,7 +2,7 @@ https://www3.cs.stonybrook.edu/~amione/CSE114_Course/materials/resources/install
 
 Use Java for 4.1, because don't feel like I'm learning significant new things about Rust by continuing to implement solutions in Rust
 
-For `import utils.Bag;` to work, need to compile import files and set CLASSPATH env:
+For `import java_utils.Bag;` to work, need to compile import files and set CLASSPATH env:
 
 ```bash
 export CLASSPATH=/Users/jefferson/Desktop/Repos/rust_education/RustInPeace/src
