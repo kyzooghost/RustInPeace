@@ -135,6 +135,7 @@ public class _4_3_23 {
             while (pointerVertex != vertex1) {
                 Edge e = edgeTo[pointerVertex];
                 cyclePath.enqueue(e);
+                weight += e.weight();
                 pointerVertex = e.other(pointerVertex);
             }
 
@@ -152,6 +153,8 @@ public class _4_3_23 {
         public Iterable<Edge> edges() {
             return mst;
         }
+
+        public double weight() {return weight;}
     }
 
     public static void main(String[] args) {
