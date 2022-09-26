@@ -6,4 +6,3 @@ Java solutions for Chapter 4
 
 References
 - https://github.com/reneargento/algorithms-sedgewick-wayne
-- https://github.com/aoeuidht/homework/tree/master/algorithms
