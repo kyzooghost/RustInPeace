@@ -136,7 +136,6 @@ public class _4_3_26 {
         count++;
 
         for (Edge e : graph.adjacent(currentVertex)) {
-            // int neighbor = e.other(currentVertex);
             int neighbor = e.other(currentVertex);
 
             // If undiscovered neighbour
@@ -198,7 +197,7 @@ public class _4_3_26 {
         Queue<Edge> criticalEdges2 = exercise.findCriticalEdges(edgeWeightedGraph2);
 
         System.out.println("CRITICAL EDGES 2: ");
-        // Only the two edges with weight 1 should are critical edges.
+        // Should have no critical edges
         for (Edge edge : criticalEdges2) {
             System.out.println(edge.either() + " - " + edge.other(edge.either()) + " : " + edge.weight());
         }

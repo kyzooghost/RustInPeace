@@ -7,7 +7,7 @@
  * Check that every edge is a minimum-weight edge. For each edge in MST - O(V):
  *   Temporarily delete from MST as an EdgeWeightedGraphWithDelete
  *   Find all crossing edges 
- *      Add all EdgeWeightedGraphWithDelete edges to a UnionFind structure
+ *      Add all EdgeWeightedGraphWithDelete edges to a UnionFind structure => O(V * V * lg V)
  *      Iterate through each edge to check which are crossing edges (find(vertex1), find(vertex2)) => O(V * E) chokepoint
  *      Verify that out of all discovered crossing edge, outer loop edge has the minimum weight.
  */
