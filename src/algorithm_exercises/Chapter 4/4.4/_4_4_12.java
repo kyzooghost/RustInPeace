@@ -3,7 +3,9 @@
  */
 
 import java_utils.Stack;
+import java_utils.Queue;
 import java_utils.DirectedEdge;
+import java_utils.EdgeWeightedDigraph;
 
 public class _4_4_12 {
     public class DirectedCycle {
@@ -27,21 +29,21 @@ public class _4_4_12 {
             marked[v] = true;
     
             // Iterate through each neighbor
-            for (int w : G.adjacent(v)) {
+            for (DirectedEdge e : G.adjacent(v)) {
                 if (this.hasCycle()) return;
-                else if (!marked[w]) {
-                    edgeTo[w] = v; // Mark first DFS path found to w
-                    dfs(G, w);
+                else if (!marked[e.to()]) {
+                    edgeTo[e.to()] = v; // Mark first DFS path found to w
+                    dfs(G, e.to());
                 }
                 // Found neighbor which already on DFS stack => cycle found!
-                else if (onStack[w]) {
+                else if (onStack[e.to()]) {
                     cycle = new Stack<Integer>();
                     // Cycle starts from v, fill in path 'backwards' using edgeTo
-                    for (int x = v; x != w; x = edgeTo[x]) {
+                    for (int x = v; x != e.to(); x = edgeTo[x]) {
                         cycle.push(x);
                     }
                     // Add "w" and "v" as cherry on top to complete cycle
-                    cycle.push(w);
+                    cycle.push(e.to());
                     cycle.push(v);
                 }
             }
@@ -51,5 +53,64 @@ public class _4_4_12 {
     
         public boolean hasCycle() {return cycle != null;}
         public Iterable<Integer> cycle() {return cycle;}
+    }
+
+    public class DepthFirstOrder {
+        private boolean[] marked;
+        private Queue<Integer> pre; // vertices in preorder (order of DFS call made)
+        private Queue<Integer> post; // vertices in postorder (order of DFS call completed)
+        private Stack<Integer> reversePost; // vertices in reverse postorder (also topological sort)
+    
+        public DepthFirstOrder(EdgeWeightedDigraph G) {
+            pre = new Queue<Integer>();
+            post = new Queue<Integer>();
+            reversePost = new Stack<Integer>();
+            marked = new boolean[G.vertices()];
+    
+            for (int v = 0; v < G.vertices(); v++) {
+                if (!marked[v]) dfs(G, v);
+            }
+        }
+    
+        private void dfs(EdgeWeightedDigraph G, int v) {
+            pre.enqueue(v);
+            for (DirectedEdge e: G.adjacent(v)) {
+                if (!marked[e.to()]) dfs(G, e.to());
+            }
+            post.enqueue(v);
+            reversePost.push(v);
+        }
+    
+        public Iterable<Integer> pre() {return pre;}
+        public Iterable<Integer> post() {return post;}
+        public Iterable<Integer> reversePost() {return reversePost;}
+    }
+
+    public class Topological {
+        private Iterable<Integer> order;
+    
+        public Topological(EdgeWeightedDigraph G) {
+            // First DFS to check for cycle
+            DirectedCycle cyclefinder = new DirectedCycle(G);
+    
+            // Second DFS to find reverse post order
+            if (!cyclefinder.hasCycle()) {
+                DepthFirstOrder dfs = new DepthFirstOrder(G);
+                order = dfs.reversePost(); // Reverse post order == topological sort
+            }
+        }
+    
+        public Iterable<Integer> order() {return order;}
+        public boolean isDAG() {return order == null;}
+        public void printOrder() {
+            StringBuilder string = new StringBuilder();
+            for (int i : order) {
+                string.append(i).append(" ");
+            }
+            System.out.println(string);
+        }
+    }
+
+    public static void main(String[] args) {
     }
 }

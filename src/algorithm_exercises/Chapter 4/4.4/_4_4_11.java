@@ -36,10 +36,3 @@
  * 
  * TOTAL => 72E + 40V + 56 bytes
  */
-
-16 byte object overhead
-private Node first; => 8 byte reference 
-private int size; => 4 byte
-=> 4 byte padding?
-
-==> 32V
