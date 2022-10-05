@@ -14,6 +14,15 @@ public class Topological {
         }
     }
 
+    public Topological(EdgeWeightedDigraph edgeWeightedDigraph) {
+        EdgeWeightedDirectedCycle cycleFinder = new EdgeWeightedDirectedCycle(edgeWeightedDigraph);
+
+        if (!cycleFinder.hasCycle()) {
+            DepthFirstOrder depthFirstOrder = new DepthFirstOrder(edgeWeightedDigraph);
+            order = depthFirstOrder.reversePost();
+        }
+    }
+
     public Iterable<Integer> order() {return order;}
     public boolean isDAG() {return order == null;}
     public void printOrder() {

@@ -17,6 +17,19 @@ public class DepthFirstOrder {
         }
     }
 
+    public DepthFirstOrder(EdgeWeightedDigraph edgeWeightedDigraph) {
+        pre = new Queue<>();
+        post = new Queue<>();
+        reversePost = new Stack<>();
+        marked = new boolean[edgeWeightedDigraph.vertices()];
+
+        for (int vertex = 0; vertex < edgeWeightedDigraph.vertices(); vertex++) {
+            if (!marked[vertex]) {
+                dfs(edgeWeightedDigraph, vertex);
+            }
+        }
+    }
+
     private void dfs(Digraph G, int v) {
         pre.enqueue(v);
         for (int w: G.adjacent(v)) {
@@ -25,6 +38,24 @@ public class DepthFirstOrder {
         post.enqueue(v);
         reversePost.push(v);
     }
+
+    private void dfs(EdgeWeightedDigraph edgeWeightedDigraph, int vertex) {
+        pre.enqueue(vertex);
+
+        marked[vertex] = true;
+
+        for (DirectedEdge edge : edgeWeightedDigraph.adjacent(vertex)) {
+            int neighbor = edge.to();
+
+            if (!marked[neighbor]) {
+                dfs(edgeWeightedDigraph, neighbor);
+            }
+        }
+
+        post.enqueue(vertex);
+        reversePost.push(vertex);
+    }
+
 
     public Iterable<Integer> pre() {return pre;}
     public Iterable<Integer> post() {return post;}
