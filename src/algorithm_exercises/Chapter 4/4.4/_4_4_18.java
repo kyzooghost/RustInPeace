@@ -1,3 +1,7 @@
+/*
+ * Write a CPM (Critical path method) client that prints all critical paths.
+ */
+
 import java_utils.Stack;
 import java_utils.Bag;
 import java_utils.DirectedEdge;
