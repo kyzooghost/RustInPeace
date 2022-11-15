@@ -4,4 +4,4 @@
  */
 
 // See https://github.com/kyzooghost/arbitrage-scanner
-// Works in theory. In practice network latency is unacceptable for results, and requires much more optimization beyond implementing the arbitrage-finding algorithm.
+// Works in theory. In practice network latency is unacceptable for results, and requires much more optimization beyond implementing the arbitrage-finding algorithm. I suppose it's practically much more about cutting down network latency in getting the required information from the network, rather than the actual algorithm once you have acquired the required information.
