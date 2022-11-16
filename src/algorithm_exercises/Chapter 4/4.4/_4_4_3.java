@@ -8,13 +8,13 @@ import java_utils.Bag;
 import java_utils.In;
 
 @SuppressWarnings("unchecked")
-public class EdgeWeightedDigraph {
+public class EdgeWeightedDigraphDense {
 
     private final int vertices;
     private int edges;
     private double[][] adjacent_;
 
-    public EdgeWeightedDigraph(int vertices) {
+    public EdgeWeightedDigraphDense(int vertices) {
         this.vertices = vertices;
         edges = 0;
         adjacent = new double[vertices][vertices];
@@ -27,7 +27,7 @@ public class EdgeWeightedDigraph {
 
     }
 
-    public EdgeWeightedDigraph(In in) {
+    public EdgeWeightedDigraphDense(In in) {
         this(in.readInt());
         int edges = in.readInt();
 
