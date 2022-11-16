@@ -4,93 +4,102 @@
  * 
  */
 
+package exercise_4_4;
+
 import java_utils.Bag;
 import java_utils.In;
+import java_utils.DirectedEdge;
 
-@SuppressWarnings("unchecked")
-public class EdgeWeightedDigraphDense {
+public class _4_4_3 {
+    @SuppressWarnings("unchecked")
+    public class EdgeWeightedDigraphDense {
 
-    private final int vertices;
-    private int edges;
-    private double[][] adjacent_;
+        private final int vertices;
+        private int edges;
+        private double[][] adjacent_;
 
-    public EdgeWeightedDigraphDense(int vertices) {
-        this.vertices = vertices;
-        edges = 0;
-        adjacent = new double[vertices][vertices];
+        public EdgeWeightedDigraphDense(int vertices) {
+            this.vertices = vertices;
+            edges = 0;
+            adjacent = new double[vertices][vertices];
 
-        for (int i = 0; i < vertices; i++) {
-            for (int j = 0; j < vertices; j++) {
-                adjacent[i][j] = Double.POSITIVE_INFINITY;
+            for (int i = 0; i < vertices; i++) {
+                for (int j = 0; j < vertices; j++) {
+                    adjacent[i][j] = Double.POSITIVE_INFINITY;
+                }
+            }
+
+        }
+
+        public EdgeWeightedDigraphDense(In in) {
+            this(in.readInt());
+            int edges = in.readInt();
+
+            if (edges < 0) {
+                throw new IllegalArgumentException("Number of edges must be nonnegative");
+            }
+
+            for (int i = 0; i < edges; i++) {
+                int vertexFrom = in.readInt();
+                int vertexTo = in.readInt();
+                double weight = in.readDouble();
+
+                DirectedEdge edge = new DirectedEdge(vertexFrom, vertexTo, weight);
+                addEdge(edge);
             }
         }
 
-    }
-
-    public EdgeWeightedDigraphDense(In in) {
-        this(in.readInt());
-        int edges = in.readInt();
-
-        if (edges < 0) {
-            throw new IllegalArgumentException("Number of edges must be nonnegative");
+        public int vertices() {
+            return vertices;
         }
 
-        for (int i = 0; i < edges; i++) {
-            int vertexFrom = in.readInt();
-            int vertexTo = in.readInt();
-            double weight = in.readDouble();
-
-            DirectedEdge edge = new DirectedEdge(vertexFrom, vertexTo, weight);
-            addEdge(edge);
-        }
-    }
-
-    public int vertices() {
-        return vertices;
-    }
-
-    public int edgesCount() {
-        return edges;
-    }
-
-    public int outdegree(int vertex) {
-        int count = 0;
-
-        for (int i = 0; i < vertices; i++) {
-            if (adjacent[vertex][i] < Double.POSITIVE_INFINITY) {count += 1;}
+        public int edgesCount() {
+            return edges;
         }
 
-        return count;
-    }
+        public int outdegree(int vertex) {
+            int count = 0;
 
-    public void addEdge(DirectedEdge edge) {
-        // Ignore parallel edge.
-        if (adjacent[edge.from()][edge.to()] == Double.POSITIVE_INFINITY) {return;}
-        adjacent[edge.from()][edge.to()] = edge.weight();
-        edges++;
-    }
-
-    public Iterable<DirectedEdge> adjacent(int vertex) {
-        Bag<DirectedEdge> bag = new Bag<DirectedEdge>();
-
-        for (int i = 0; i < vertices; i++) {
-            if (adjacent[vertex][i] < Double.POSITIVE_INFINITY) {
-                bag.add(new DirectedEdge(vertex, i, adjacent[vertex][i]);)
+            for (int i = 0; i < vertices; i++) {
+                if (adjacent[vertex][i] < Double.POSITIVE_INFINITY) {count += 1;}
             }
+
+            return count;
         }
-        
-        return bag;
+
+        public void addEdge(DirectedEdge edge) {
+            // Ignore parallel edge.
+            if (adjacent[edge.from()][edge.to()] == Double.POSITIVE_INFINITY) {return;}
+            adjacent[edge.from()][edge.to()] = edge.weight();
+            edges++;
+        }
+
+        public Iterable<DirectedEdge> adjacent(int vertex) {
+            Bag<DirectedEdge> bag = new Bag<DirectedEdge>();
+
+            for (int i = 0; i < vertices; i++) {
+                if (adjacent[vertex][i] < Double.POSITIVE_INFINITY) {
+                    bag.add(new DirectedEdge(vertex, i, adjacent[vertex][i]));
+                }
+            }
+            
+            return bag;
+        }
+
+        public Iterable<DirectedEdge> edges() {
+            Bag<DirectedEdge> bag = new Bag<>();
+
+            for (int vertex = 0; vertex < vertices; vertex++) {
+                for (DirectedEdge edge : adjacent(vertec)) {
+                    bag.add(edge);
+                }
+            }
+
+            return bag;
+        }
     }
 
-    public Iterable<DirectedEdge> edges() {
-        Bag<DirectedEdge> bag = new Bag<>();
-
-        for (int vertex = 0; vertex < vertices; vertex++) {
-            for (DirectedEdge edge : adjacent(vertec)) {
-                bag.add(edge);
-            }
-        }
-
-        return bag;
+    public static void main(String[] args) {
+        _4_4_3 exercise = new _4_4_3();
     }
 }

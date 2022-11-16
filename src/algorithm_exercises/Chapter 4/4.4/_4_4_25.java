@@ -12,7 +12,7 @@ import java_utils.Stack;
 import java_utils.IndexMinPriorityQueue;
 import java_utils.HashSet;
 
-public class _4_4_24 {
+public class _4_4_25 {
 
     public class DijkstraSPMultiSource {
         private DirectedEdge[] edgeTo;
@@ -102,7 +102,7 @@ public class _4_4_24 {
     }
 
     public static void main(String[] args) {
-        _4_4_24 exercise = new _4_4_24();
+        _4_4_25 exercise = new _4_4_25();
         // tinyEWD.txt or digraph on p644
         EdgeWeightedDigraph edgeWeightedDigraph = new EdgeWeightedDigraph(8);
         edgeWeightedDigraph.addEdge(new DirectedEdge(4, 5, 0.35));
