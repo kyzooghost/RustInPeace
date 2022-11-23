@@ -23,7 +23,6 @@ public class _4_4_24 {
         private IndexMinPriorityQueue<Double> pq;
 
         public DijkstraSPMultiSource(EdgeWeightedDigraph G, HashSet<Integer> sources) {
-            // Create a 'dummy source vertex' with 0-weight edge to all vertices.
             EdgeWeightedDigraph graphWithDummySource = new EdgeWeightedDigraph(G.vertices() + 1);
             int dummyVertex = G.vertices();
 
