@@ -176,8 +176,50 @@ def LSDsort(words: List[str], alphabet: Alphabet):
     # So if you mutate each individual element in the array (implicit dereferencing is happening here?) that mutation is persisted
     # But if you reassign the actual 'array' variable itself, you are only changing the local value of the 'array' reference. The original array is unaltered, and the original reference is maintaining outside the function scope.
 
+def ThreewayQuickSort(words: List[str], alphabet: Alphabet):
+    _ThreewayQuickSort(words, 0, len(words) - 1, 0, alphabet)
+
+# Edge case - dealing with variable length string, treat non-existent character as special character that has index value of -1
+def _ThreewayQuickSort(words: List[str], low: int, high: int, d: int, alphabet: Alphabet):
+    if high <= low:
+        return
+
+    # Find length of longest word
+    w = 0
+    for word in words[low: high + 1]:
+        w = max(w, len(word))
+    if d >= w:
+        return 
+
+    left = low
+    right = high
+
+    partitionValue = -1 if d >= len(words[low]) else alphabet.toIndex(words[low][d])
+
+    index = low + 1
+
+    while index <= right:
+        characterValue = -1 if d >= len(words[index]) else alphabet.toIndex(words[index][d])
+
+        if characterValue < partitionValue:
+            words[left], words[index] = words[index], words[left]
+            index += 1
+            left += 1
+        elif characterValue > partitionValue:
+            words[right], words[index] = words[index], words[right]
+            right -= 1
+        else:
+            index += 1
+
+    _ThreewayQuickSort(words, low, left - 1, d, alphabet)
+    _ThreewayQuickSort(words, left, right, d + 1, alphabet)
+    _ThreewayQuickSort(words, right + 1, high, d, alphabet)
+
 words_copy = copy.copy(words)
+words_copy_1 = copy.copy(words)
 MSDsort(words, alphabet)
 LSDsort(words_copy, alphabet)
+ThreewayQuickSort(words_copy_1, alphabet)
 print(words)
 print(words_copy)
+print(words_copy_1)
