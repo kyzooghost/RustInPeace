@@ -501,11 +501,6 @@ class TST:
         if node is None:
             return None
 
-        # for i in range(nodeStack.size()):
-        #     print(nodeStack.items[i].character)
-        #     print(directionStack.items[i])
-        #     print('---')
-
         # Search hit, set node.value to None
         if node.value is not None:
             node.value = None
