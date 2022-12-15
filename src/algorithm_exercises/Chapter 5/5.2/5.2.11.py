@@ -1,5 +1,5 @@
 '''
-Eliminate one-way branching (internal and external) TrieST.
+Eliminate one-way branching (internal and external) for TrieST.
 
 To eliminate one-way branching, we do not allow nodes with a single link
 Need to account for edge case with empty string
@@ -48,7 +48,6 @@ class TrieST:
         current_string = self.root.nibble
 
         while len(current_string) < len(key):
-            print(current_string)
             next_nibble_start = key[len(current_string)]
             node = node.next[ord(next_nibble_start)]
 
@@ -56,7 +55,6 @@ class TrieST:
                 break
             
             current_string = current_string + node.nibble
-        print(current_string)
         if node is None or current_string != key:
             return None
         else:
@@ -199,8 +197,6 @@ class TrieST:
                     if upstream_node.next[i] is not None:
                         childrenFound.append(i)
 
-                # print(childrenFound, node.value)
-
                 if len(childrenFound) == 1 and upstream_node.value is None:
                     prefix_to_add = upstream_node.nibble + prefix_to_add
                     continue
@@ -225,11 +221,10 @@ n3 = trie.put('shela', 3)
 trie.put('shellfishes', 4)
 
 # print(trie.size)
-trie.delete('shela')
+# trie.delete('shela')
 # trie.delete('shells')
-trie.delete('shellfish')
+# trie.delete('shellfish')
 # trie.delete('caba')
-print(trie.size)
 print(trie.get('shells'))
 print(trie.get('shellfish'))
 print(trie.get('shela'))
